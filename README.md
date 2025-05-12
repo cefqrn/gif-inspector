@@ -1,0 +1,2 @@
+# gif inspector
+uses javafx
