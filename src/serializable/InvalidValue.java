@@ -5,27 +5,16 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class InvalidValue extends ParseException {
-  public <T> InvalidValue(String name, T got, T expected) {
-    super(String.format(
-      "Invalid value for %s: got %s, expected %s",
-      name,
-      got,
-      expected
-    ));
-  }
-
   @SafeVarargs
   public <T> InvalidValue(String name, T got, T... expected) {
     super(String.format(
-      "Invalid value for %s: got %s, expected one of %s",
+      expected.length == 1
+        ? "Invalid value for %s: got %s, expected %s"
+        : "Invalid value for %s: got %s, expected one of %s",
       name,
       got,
       Arrays.stream(expected).map(Object::toString).collect(Collectors.joining(", "))
     ));
-  }
-
-  public <T> InvalidValue(Function<T, String> format, String name, T got, T expected) {
-    this(name, format.apply(got), format.apply(expected));
   }
 
   @SafeVarargs
