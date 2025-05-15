@@ -20,6 +20,6 @@ public class Trailer extends Block {
     if (data < 0)
       throw new UnexpectedEndOfStream();
     if (data != EXPECTED_DATA)
-      throw new InvalidValue(InvalidValue::formatByte, "trailer block", EXPECTED_DATA, data);
+      throw new InvalidValue(InvalidValue::formatByte, "trailer block", data, EXPECTED_DATA);
   }
 }
