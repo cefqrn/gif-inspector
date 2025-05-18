@@ -5,6 +5,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 public class InvalidValue extends ParseException {
+  public InvalidValue(String message) {
+    super(message);
+  }
+
   @SafeVarargs
   public <T> InvalidValue(String name, T got, T... expected) {
     super(String.format(
