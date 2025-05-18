@@ -8,13 +8,37 @@ import exceptions.ParseException;
 import serializable.LittleEndian;
 
 public class Screen extends Block {
-  public int width;
-  public int height;
-  public int colorResolution;
-  public boolean globalColorTableIsSorted;
-  public Color[] globalColorTable;
-  public int backgroundColorIndex;
-  public int pixelAspectRatio;
+  public final int width;
+  public final int height;
+  public final int pixelAspectRatio;
+  public final int colorResolution;
+  protected final Color[] globalColorTable;
+  public final boolean globalColorTableIsSorted;
+  public final int backgroundColorIndex;
+
+  public Screen(InputStream stream) throws IOException, ParseException {
+    width = LittleEndian.readU16From(stream);
+    height = LittleEndian.readU16From(stream);
+
+    var packedFields = LittleEndian.readU8From(stream);
+
+    backgroundColorIndex = LittleEndian.readU8From(stream);
+    pixelAspectRatio = LittleEndian.readU8From(stream);
+
+    var hasGlobalColorTable  =        (packedFields >> 7) == 1;
+    colorResolution          =        (packedFields >> 4) & 7;
+    globalColorTableIsSorted =       ((packedFields >> 3) & 1) == 1;
+    if (hasGlobalColorTable) {
+      var size               = 1 << (((packedFields >> 0) & 7) + 1);
+      globalColorTable = new Color[size];
+      for (var i=0; i < size; ++i)
+        globalColorTable[i] = new Color(stream);
+    } else {
+      globalColorTable = null;
+    }
+  }
+
+  public Color[] getGlobalColorTable() { return globalColorTable.clone(); }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
@@ -41,31 +65,6 @@ public class Screen extends Block {
     if (hasGlobalColorTable) {
       for (var color : globalColorTable)
         color.writeTo(stream);
-    }
-  }
-
-  @Override
-  public void readFrom(InputStream stream) throws IOException, ParseException {
-    width = LittleEndian.readU16From(stream);
-    height = LittleEndian.readU16From(stream);
-
-    var packedFields = LittleEndian.readU8From(stream);
-
-    backgroundColorIndex = LittleEndian.readU8From(stream);
-    pixelAspectRatio = LittleEndian.readU8From(stream);
-
-    var hasGlobalColorTable  =        (packedFields >> 7) == 1;
-    if (!hasGlobalColorTable)
-      return;
-
-    colorResolution          =        (packedFields >> 4) & 7;
-    globalColorTableIsSorted =       ((packedFields >> 3) & 1) == 1;
-
-    var size                 = 1 << (((packedFields >> 0) & 7) + 1);
-    globalColorTable = new Color[size];
-    for (var i=0; i < size; ++i) {
-      globalColorTable[i] = new Color();
-      globalColorTable[i].readFrom(stream);
     }
   }
 }

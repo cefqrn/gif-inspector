@@ -11,25 +11,18 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 public class Header extends Block {
-  byte[] signature = new byte[3];
-  Version version;
+  public final Version version;
 
-  private static final byte[] EXPECTED_SIGNATURE = "GIF".getBytes();
+  protected static final byte[] EXPECTED_SIGNATURE = "GIF".getBytes();
 
-  @Override
-  public void writeTo(OutputStream stream) throws IOException {
-    stream.write(signature);
-    stream.write(version.getData());
-  }
-
-  @Override
-  public void readFrom(InputStream stream) throws IOException, ParseException {
-    if (stream.read(signature) < signature.length)
-      throw new UnexpectedEndOfStream();
-    if (!Arrays.equals(signature, EXPECTED_SIGNATURE))
-      throw new InvalidValue(InvalidValue::formatByteArray, "signature", signature, EXPECTED_SIGNATURE);
-
+  public Header(InputStream stream) throws IOException, ParseException {
     var buffer = new byte[3];
+
+    if (stream.read(buffer) < buffer.length)
+      throw new UnexpectedEndOfStream();
+    if (!Arrays.equals(buffer, EXPECTED_SIGNATURE))
+      throw new InvalidValue(InvalidValue::formatByteArray, "signature", buffer, EXPECTED_SIGNATURE);
+
     if (stream.read(buffer) < buffer.length)
       throw new UnexpectedEndOfStream();
 
@@ -43,5 +36,13 @@ public class Header extends Block {
           buffer,
           Arrays.stream(Version.values()).map(Version::getData).toArray(byte[][]::new)
         ));
+  }
+
+  public byte[] getSignature() { return EXPECTED_SIGNATURE.clone(); }
+
+  @Override
+  public void writeTo(OutputStream stream) throws IOException {
+    stream.write(EXPECTED_SIGNATURE);
+    stream.write(version.getData());
   }
 }

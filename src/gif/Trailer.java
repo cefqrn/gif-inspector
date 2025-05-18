@@ -9,19 +9,18 @@ import exceptions.ParseException;
 import exceptions.UnexpectedEndOfStream;
 
 public class Trailer extends Block {
-  static final int EXPECTED_DATA = 0x3b;
+  public final int data = 0x3b;  // expected value
 
-  @Override
-  public void writeTo(OutputStream stream) throws IOException {
-    stream.write(EXPECTED_DATA);
+  public Trailer(InputStream stream) throws IOException, ParseException {
+    var value = stream.read();
+    if (value < 0)
+      throw new UnexpectedEndOfStream();
+    if (value != data)
+      throw new InvalidValue(InvalidValue::formatByte, "trailer block", value, data);
   }
 
   @Override
-  public void readFrom(InputStream stream) throws IOException, ParseException {
-    var data = stream.read();
-    if (data < 0)
-      throw new UnexpectedEndOfStream();
-    if (data != EXPECTED_DATA)
-      throw new InvalidValue(InvalidValue::formatByte, "trailer block", data, EXPECTED_DATA);
+  public void writeTo(OutputStream stream) throws IOException {
+    stream.write(data);
   }
 }
