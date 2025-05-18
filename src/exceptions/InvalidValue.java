@@ -10,20 +10,20 @@ public class InvalidValue extends ParseException {
   }
 
   @SafeVarargs
-  public <T> InvalidValue(String name, T got, T... expected) {
+  public <T> InvalidValue(Function<T, String> format, String name, T got, T... expected) {
     super(String.format(
       expected.length == 1
         ? "Invalid value for %s: got %s, expected %s"
         : "Invalid value for %s: got %s, expected one of %s",
       name,
-      got,
-      Arrays.stream(expected).map(Object::toString).collect(Collectors.joining(", "))
+      format.apply(got),
+      Arrays.stream(expected).map(format).collect(Collectors.joining(", "))
     ));
   }
 
   @SafeVarargs
-  public <T> InvalidValue(Function<T, String> format, String name, T got, T... expected) {
-    this(name, format.apply(got), Arrays.stream(expected).map(format).toArray());
+  public <T extends Object> InvalidValue(String name, T got, T... expected) {
+    this(T::toString, name, got, expected);
   }
 
   public static String formatByte(int x) {
