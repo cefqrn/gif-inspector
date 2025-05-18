@@ -1,10 +1,12 @@
 package gif;
 
-import serializable.*;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import exceptions.InvalidValue;
+import exceptions.ParseException;
+import exceptions.UnexpectedEndOfStream;
 
 public class Trailer extends Block {
   static final int EXPECTED_DATA = 0x3b;

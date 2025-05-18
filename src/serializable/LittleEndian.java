@@ -4,6 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import exceptions.ParseException;
+import exceptions.UnexpectedEndOfStream;
+
 public class LittleEndian {
   public static void writeU16To(OutputStream stream, int x) throws IOException {
     stream.write(x);

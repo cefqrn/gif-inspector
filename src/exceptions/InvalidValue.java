@@ -1,4 +1,4 @@
-package serializable;
+package exceptions;
 
 import java.util.Arrays;
 import java.util.function.Function;

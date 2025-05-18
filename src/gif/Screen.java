@@ -1,11 +1,11 @@
 package gif;
 
-import serializable.LittleEndian;
-import serializable.ParseException;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import exceptions.ParseException;
+import serializable.LittleEndian;
 
 public class Screen extends Block {
   public int width;

@@ -1,8 +1,11 @@
 package gif;
 
-import serializable.*;
-
 import java.util.Arrays;
+
+import exceptions.InvalidValue;
+import exceptions.ParseException;
+import exceptions.UnexpectedEndOfStream;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
