@@ -17,10 +17,12 @@ public abstract class LabeledBlock extends Block {
       throw new UnexpectedEndOfStream();
 
     switch (labelRead) {
+    case Extension.label:
+      return Extension.readFrom(stream);
     case Trailer.label:
       return new Trailer();
     default:
-      throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Trailer.label);
+      throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Extension.label, Trailer.label);
     }
   }
 
