@@ -1,23 +1,22 @@
 package main;
 
-import javafx.application.Application;
-import javafx.application.Platform;
-import javafx.scene.Scene;
-import javafx.scene.control.Dialog;
-import javafx.scene.control.ButtonType;
-import javafx.scene.layout.StackPane;
-import javafx.stage.FileChooser.ExtensionFilter;
-import javafx.stage.FileChooser;
-import javafx.stage.Stage;
-import javafx.scene.image.Image;
-import javafx.scene.image.ImageView;
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-
+import java.io.ByteArrayOutputStream;
 import java.util.Optional;
+
+import javafx.application.Application;
+import javafx.application.Platform;
+import javafx.scene.control.Dialog;
+import javafx.scene.control.ButtonType;
+import javafx.stage.FileChooser.ExtensionFilter;
+import javafx.stage.FileChooser;
+import javafx.stage.Stage;
+
+import gif.*;
+import exceptions.*;
 
 public class Main extends Application {
   private File promptForFile(Stage stage, String title) {
@@ -64,12 +63,19 @@ public class Main extends Application {
         }
       } while (file == null);
 
+      stage.setTitle(file.getName());
+
       try (var stream = new FileInputStream(file)) {
         try {
-          var scene = new Scene(new StackPane(new ImageView(new Image(stream))));
+          var gif = new Gif(stream);
 
-          stage.setTitle(file.getName());
-          stage.setScene(scene);
+          System.out.println(gif.screen.width);
+          System.out.println(gif.screen.height);
+
+          var output = new ByteArrayOutputStream();
+          gif.writeTo(output);
+          System.out.println(InvalidValue.formatByteArray(output.toByteArray()));
+          System.out.flush();
         } catch (Exception e) {
           e.printStackTrace();
 
