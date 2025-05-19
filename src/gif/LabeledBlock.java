@@ -9,11 +9,7 @@ import exceptions.ParseException;
 import exceptions.UnexpectedEndOfStream;
 
 public abstract class LabeledBlock extends Block {
-  private final int label;
-
-  public LabeledBlock(int label) {
-    this.label = label;
-  }
+  public abstract int getLabel();
 
   public static LabeledBlock readFrom(InputStream stream) throws IOException, ParseException {
     int labelRead = stream.read();
@@ -30,6 +26,6 @@ public abstract class LabeledBlock extends Block {
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
-    stream.write(label);
+    stream.write(getLabel());
   }
 }
