@@ -8,7 +8,7 @@ import exceptions.ParseException;
 import exceptions.UnexpectedEndOfStream;
 
 public abstract class Extension extends LabeledBlock {
-  public static final int label = 0x21;
+  static final int label = 0x21;
 
   @Override
   public int getLabel() { return label; }

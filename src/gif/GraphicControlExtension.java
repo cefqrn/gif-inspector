@@ -11,7 +11,7 @@ import exceptions.ParseException;
 import serializable.LittleEndian;
 
 public class GraphicControlExtension extends Extension {
-  public static final int extensionLabel = 0xf9;
+  static final int extensionLabel = 0xf9;
 
   public final int disposalMethod;
   public final boolean waitsForUserInput;

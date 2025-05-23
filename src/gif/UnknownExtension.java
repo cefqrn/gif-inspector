@@ -8,7 +8,7 @@ import java.util.Arrays;
 import exceptions.ParseException;
 
 public class UnknownExtension extends Extension {
-  public final int extensionLabel;
+  final int extensionLabel;
   protected final byte[][] data;
 
   public UnknownExtension(InputStream stream, int extensionLabel) throws IOException, ParseException {
