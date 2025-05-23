@@ -21,6 +21,8 @@ public abstract class Extension extends LabeledBlock {
       throw new UnexpectedEndOfStream();
 
     switch (labelRead) {
+    case GraphicControlExtension.extensionLabel:
+      return new GraphicControlExtension(stream);
     default:
       return new UnknownExtension(stream, labelRead);
     }
