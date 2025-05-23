@@ -3,6 +3,7 @@ package gif;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Optional;
 
 import exceptions.ParseException;
 import serializable.LittleEndian;
@@ -12,7 +13,7 @@ public class Screen extends Block {
   public final int height;
   public final int pixelAspectRatio;
   public final int colorResolution;
-  protected final Color[] globalColorTable;
+  protected final Optional<Color[]> globalColorTable;
   public final boolean globalColorTableIsSorted;
   public final int backgroundColorIndex;
 
@@ -28,42 +29,45 @@ public class Screen extends Block {
     var hasGlobalColorTable  =        (packedFields >> 7) == 1;
     colorResolution          =        (packedFields >> 4) & 7;
     globalColorTableIsSorted =       ((packedFields >> 3) & 1) == 1;
+
+    Color[] table = null;
     if (hasGlobalColorTable) {
       var size               = 1 << (((packedFields >> 0) & 7) + 1);
-      globalColorTable = new Color[size];
+
+      table = new Color[size];
       for (var i=0; i < size; ++i)
-        globalColorTable[i] = new Color(stream);
-    } else {
-      globalColorTable = null;
+        table[i] = new Color(stream);
     }
+    globalColorTable = Optional.ofNullable(table);
   }
 
-  public Color[] getGlobalColorTable() { return globalColorTable.clone(); }
+  public Optional<Color[]> getGlobalColorTable() {
+    return globalColorTable.map(Color[]::clone);
+  }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
     LittleEndian.writeU16To(stream, width);
     LittleEndian.writeU16To(stream, height);
 
-    var packedFields = 0;
-    var hasGlobalColorTable = globalColorTable != null;
-    if (hasGlobalColorTable) {
+    var packedFields =    (colorResolution << 4)
+                     | globalColorTable.map(table -> {
       int packedSize = 0;
-      for (var left=globalColorTable.length; left > 2; left >>= 1)
+      for (var left=table.length; left > 2; left >>= 1)
         packedSize++;
 
-      packedFields =                            (1 << 7)      // has global color table
-                   |              (colorResolution << 4)
-                   | (globalColorTableIsSorted ? 1 << 3 : 0)
-                   |                   (packedSize << 0);
-    }
+      return                            (1 << 7)      // has global color table
+           | (globalColorTableIsSorted ? 1 << 3 : 0)
+           |                   (packedSize << 0);
+    }).orElse(0);
     LittleEndian.writeU8To(stream, packedFields);
 
     LittleEndian.writeU8To(stream, backgroundColorIndex);
     LittleEndian.writeU8To(stream, pixelAspectRatio);
 
-    if (hasGlobalColorTable) {
-      for (var color : globalColorTable)
+    // can't use ifPresent since Color.writeTo throws
+    if (globalColorTable.isPresent()) {
+      for (var color : globalColorTable.get())
         color.writeTo(stream);
     }
   }
