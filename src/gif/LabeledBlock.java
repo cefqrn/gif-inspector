@@ -11,7 +11,7 @@ import exceptions.UnexpectedEndOfStream;
 public abstract class LabeledBlock extends Block {
   public abstract int getLabel();
 
-  public static LabeledBlock readFrom(InputStream stream) throws IOException, ParseException {
+  public static LabeledBlock readFrom(InputStream stream, State state) throws IOException, ParseException {
     int labelRead = stream.read();
     if (labelRead < 0)
       throw new UnexpectedEndOfStream();
@@ -19,10 +19,12 @@ public abstract class LabeledBlock extends Block {
     switch (labelRead) {
     case Extension.label:
       return Extension.readFrom(stream);
+    case Image.label:
+      return new Image(stream, state);
     case Trailer.label:
       return new Trailer();
     default:
-      throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Extension.label, Trailer.label);
+      throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Extension.label, Image.label, Trailer.label);
     }
   }
 
