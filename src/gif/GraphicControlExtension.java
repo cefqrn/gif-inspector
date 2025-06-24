@@ -11,7 +11,7 @@ import exceptions.ParseException;
 import serializable.LittleEndian;
 
 public class GraphicControlExtension extends Extension {
-  static final int extensionLabel = 0xf9;
+  public static final int label = 0xf9;
 
   public final int disposalMethod;
   public final boolean waitsForUserInput;
@@ -38,12 +38,11 @@ public class GraphicControlExtension extends Extension {
   }
 
   @Override
-  public int getExtensionLabel() {
-    return extensionLabel;
-  }
+  public int getLabel() { return GraphicControlExtension.label; }
 
   public void writeTo(OutputStream stream) throws IOException {
-    super.writeTo(stream);
+    stream.write(Extension.label);
+    stream.write(GraphicControlExtension.label);
 
     var data = new ByteArrayOutputStream(4);
 

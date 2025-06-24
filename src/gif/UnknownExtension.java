@@ -8,11 +8,11 @@ import java.util.Arrays;
 import exceptions.ParseException;
 
 public class UnknownExtension extends Extension {
-  final int extensionLabel;
+  public final int label;
   protected final byte[][] data;
 
-  public UnknownExtension(InputStream stream, int extensionLabel) throws IOException, ParseException {
-    this.extensionLabel = extensionLabel;
+  public UnknownExtension(InputStream stream, int label) throws IOException, ParseException {
+    this.label = label;
     this.data = DataBlock.readFrom(stream);
   }
 
@@ -23,13 +23,13 @@ public class UnknownExtension extends Extension {
   }
 
   @Override
-  public int getExtensionLabel() {
-    return extensionLabel;
-  }
+  public int getLabel() { return label; }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
-    super.writeTo(stream);
+    stream.write(Extension.label);
+    stream.write(label);
+
     DataBlock.writeTo(stream, data);
   }
 }

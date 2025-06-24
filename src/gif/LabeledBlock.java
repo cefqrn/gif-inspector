@@ -2,7 +2,6 @@ package gif;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 
 import exceptions.InvalidValue;
 import exceptions.ParseException;
@@ -26,10 +25,5 @@ public abstract class LabeledBlock extends Block {
     default:
       throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Extension.label, Image.label, Trailer.label);
     }
-  }
-
-  @Override
-  public void writeTo(OutputStream stream) throws IOException {
-    stream.write(getLabel());
   }
 }

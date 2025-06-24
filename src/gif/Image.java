@@ -10,7 +10,7 @@ import exceptions.ParseException;
 import serializable.LittleEndian;
 
 public class Image extends LabeledBlock {
-  static final int label = 0x2c;
+  public static final int label = 0x2c;
 
   public final int left;
   public final int top;
@@ -52,7 +52,7 @@ public class Image extends LabeledBlock {
   }
 
   @Override
-  public int getLabel() { return label; }
+  public int getLabel() { return Image.label; }
 
   public byte[][] getData() {
     return Arrays.stream(data)
@@ -66,7 +66,7 @@ public class Image extends LabeledBlock {
     if (graphicControlExtension.isPresent())
       graphicControlExtension.get().writeTo(stream);
 
-    super.writeTo(stream);
+    stream.write(Image.label);
 
     LittleEndian.writeU16To(stream, left  );
     LittleEndian.writeU16To(stream, top   );
