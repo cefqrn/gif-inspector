@@ -26,4 +26,19 @@ public abstract class LabeledBlock extends Block {
       throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Extension.label, Image.label, Trailer.label);
     }
   }
+
+  public boolean isGraphicRenderingBlock() {
+    var label = getLabel();
+    return 0x00 <= label && label <= 0x7f && !(this instanceof Trailer);
+  }
+
+  public boolean isControlBlock() {
+    var label = getLabel();
+    return 0x80 <= label && label <= 0xf9;
+  }
+
+  public boolean isSpecialPurposeBlock() {
+    var label = getLabel();
+    return 0xfa <= label && label <= 0xff;
+  }
 }

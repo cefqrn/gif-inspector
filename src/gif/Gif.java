@@ -33,10 +33,8 @@ public class Gif implements Serializable {
         continue;
       }
 
-      if (block instanceof Image) {
-        // clear control blocks
-        state = new State();
-      }
+      if (block.isGraphicRenderingBlock())
+        state = new State();  // clear control blocks
 
       blocks.add(block);
     }
