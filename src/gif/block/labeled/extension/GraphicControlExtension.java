@@ -1,4 +1,4 @@
-package gif;
+package gif.block.labeled.extension;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
@@ -6,9 +6,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
 
-import exceptions.InvalidValue;
-import exceptions.ParseException;
-import serializable.LittleEndian;
+import gif.data.DataBlock;
+import gif.data.LittleEndian;
+import gif.exception.InvalidValue;
+import gif.exception.ParseException;
 
 public class GraphicControlExtension extends Extension {
   public static final int label = 0xf9;

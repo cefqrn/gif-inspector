@@ -1,11 +1,12 @@
-package gif;
+package gif.block.labeled.extension;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import exceptions.ParseException;
+import gif.data.DataBlock;
+import gif.exception.ParseException;
 
 public class UnknownExtension extends Extension {
   public final int label;

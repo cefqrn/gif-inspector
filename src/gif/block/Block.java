@@ -1,5 +1,5 @@
-package gif;
+package gif.block;
 
-import serializable.Serializable;
+import gif.data.Serializable;
 
 public abstract class Block implements Serializable {}

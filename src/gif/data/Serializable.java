@@ -1,4 +1,4 @@
-package serializable;
+package gif.data;
 
 import java.io.IOException;
 import java.io.OutputStream;

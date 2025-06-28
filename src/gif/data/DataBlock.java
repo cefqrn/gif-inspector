@@ -1,12 +1,12 @@
-package gif;
+package gif.data;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 
-import exceptions.ParseException;
-import exceptions.UnexpectedEndOfStream;
+import gif.exception.ParseException;
+import gif.exception.UnexpectedEndOfStream;
 
 public final class DataBlock {
   public static void writeTo(OutputStream stream, byte[][] dataBlock) throws IOException {

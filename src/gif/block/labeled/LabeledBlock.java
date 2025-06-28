@@ -1,11 +1,14 @@
-package gif;
+package gif.block.labeled;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import exceptions.InvalidValue;
-import exceptions.ParseException;
-import exceptions.UnexpectedEndOfStream;
+import gif.block.Block;
+import gif.block.labeled.extension.Extension;
+import gif.data.State;
+import gif.exception.InvalidValue;
+import gif.exception.ParseException;
+import gif.exception.UnexpectedEndOfStream;
 
 public abstract class LabeledBlock extends Block {
   public abstract int getLabel();

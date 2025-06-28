@@ -1,4 +1,4 @@
-package exceptions;
+package gif.exception;
 
 public class ParseException extends Exception {
   public ParseException() {}

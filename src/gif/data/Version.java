@@ -1,14 +1,13 @@
-package gif;
+package gif.data;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import exceptions.InvalidValue;
-import exceptions.ParseException;
-import exceptions.UnexpectedEndOfStream;
-import serializable.Serializable;
+import gif.exception.InvalidValue;
+import gif.exception.ParseException;
+import gif.exception.UnexpectedEndOfStream;
 
 public enum Version implements Serializable {
   VERSION_87A("87a".getBytes()),

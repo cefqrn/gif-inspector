@@ -6,8 +6,14 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import exceptions.ParseException;
-import serializable.Serializable;
+import gif.block.Header;
+import gif.block.Screen;
+import gif.block.labeled.LabeledBlock;
+import gif.block.labeled.Trailer;
+import gif.block.labeled.extension.GraphicControlExtension;
+import gif.data.Serializable;
+import gif.data.State;
+import gif.exception.ParseException;
 
 public class Gif implements Serializable {
   public final Header header;

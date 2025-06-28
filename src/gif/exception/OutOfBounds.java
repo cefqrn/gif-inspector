@@ -1,4 +1,4 @@
-package exceptions;
+package gif.exception;
 
 import java.util.function.Function;
 

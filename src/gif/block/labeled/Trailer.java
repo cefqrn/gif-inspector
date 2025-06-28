@@ -1,4 +1,4 @@
-package gif;
+package gif.block.labeled;
 
 import java.io.IOException;
 import java.io.OutputStream;

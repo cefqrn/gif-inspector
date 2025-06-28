@@ -1,12 +1,10 @@
-package gif;
+package gif.data;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import exceptions.ParseException;
-import serializable.LittleEndian;
-import serializable.Serializable;
+import gif.exception.ParseException;
 
 public class Color implements Serializable {
   public final int red;

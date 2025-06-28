@@ -15,8 +15,8 @@ import javafx.stage.FileChooser.ExtensionFilter;
 import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
-import gif.*;
-import exceptions.*;
+import gif.Gif;
+import gif.exception.InvalidValue;
 
 public class Main extends Application {
   private File promptForFile(Stage stage, String title) {

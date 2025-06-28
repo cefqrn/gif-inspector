@@ -1,14 +1,14 @@
-package gif;
+package gif.block;
 
 import java.util.Arrays;
-
-import exceptions.InvalidValue;
-import exceptions.ParseException;
-import exceptions.UnexpectedEndOfStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+
+import gif.data.Version;
+import gif.exception.InvalidValue;
+import gif.exception.ParseException;
+import gif.exception.UnexpectedEndOfStream;
 
 public class Header extends Block {
   public final Version version;

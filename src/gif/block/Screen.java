@@ -1,12 +1,13 @@
-package gif;
+package gif.block;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Optional;
 
-import exceptions.ParseException;
-import serializable.LittleEndian;
+import gif.data.Color;
+import gif.data.LittleEndian;
+import gif.exception.ParseException;
 
 public class Screen extends Block {
   public final int width;

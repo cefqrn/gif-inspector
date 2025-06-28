@@ -1,4 +1,4 @@
-package gif;
+package gif.block.labeled;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -6,8 +6,12 @@ import java.io.OutputStream;
 import java.util.Arrays;
 import java.util.Optional;
 
-import exceptions.ParseException;
-import serializable.LittleEndian;
+import gif.block.labeled.extension.GraphicControlExtension;
+import gif.data.Color;
+import gif.data.DataBlock;
+import gif.data.LittleEndian;
+import gif.data.State;
+import gif.exception.ParseException;
 
 public class Image extends LabeledBlock {
   public static final int label = 0x2c;
