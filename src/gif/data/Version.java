@@ -34,7 +34,7 @@ public enum Version implements Serializable {
     }
 
     throw new InvalidValue(
-      InvalidValue::formatByteArray,
+      ByteArray::format,
       "version",
       buffer,
       Arrays.stream(Version.values())

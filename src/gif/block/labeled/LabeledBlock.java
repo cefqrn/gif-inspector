@@ -5,6 +5,7 @@ import java.io.InputStream;
 
 import gif.block.Block;
 import gif.block.labeled.extension.Extension;
+import gif.data.Byte;
 import gif.data.State;
 import gif.exception.InvalidValue;
 import gif.exception.ParseException;
@@ -26,7 +27,7 @@ public abstract class LabeledBlock extends Block {
     case Trailer.label:
       return new Trailer();
     default:
-      throw new InvalidValue(InvalidValue::formatByte, "label", labelRead, Extension.label, Image.label, Trailer.label);
+      throw new InvalidValue(Byte::format, "label", labelRead, Extension.label, Image.label, Trailer.label);
     }
   }
 

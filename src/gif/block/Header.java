@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import gif.data.ByteArray;
 import gif.data.Version;
 import gif.exception.InvalidValue;
 import gif.exception.ParseException;
@@ -20,7 +21,7 @@ public class Header extends Block {
     if (buffer.length != 3)
       throw new UnexpectedEndOfStream();
     if (!Arrays.equals(buffer, EXPECTED_SIGNATURE))
-      throw new InvalidValue(InvalidValue::formatByteArray, "signature", buffer, EXPECTED_SIGNATURE);
+      throw new InvalidValue(ByteArray::format, "signature", buffer, EXPECTED_SIGNATURE);
 
     version = Version.readFrom(stream);
   }

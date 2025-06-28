@@ -16,7 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import gif.Gif;
-import gif.exception.InvalidValue;
+import gif.data.ByteArray;
 
 public class Main extends Application {
   private File promptForFile(Stage stage, String title) {
@@ -74,7 +74,7 @@ public class Main extends Application {
 
           var output = new ByteArrayOutputStream();
           gif.writeTo(output);
-          System.out.println(InvalidValue.formatByteArray(output.toByteArray()));
+          System.out.println(ByteArray.format(output.toByteArray()));
           System.out.flush();
         } catch (Exception e) {
           e.printStackTrace();
