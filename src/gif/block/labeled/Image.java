@@ -3,6 +3,9 @@ package gif.block.labeled;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 import java.util.Optional;
 
 import gif.block.labeled.extension.GraphicControlExtension;
@@ -19,7 +22,7 @@ public class Image extends LabeledBlock {
   public final int top;
   public final int width;
   public final int height;
-  protected final Optional<Color[]> colorTable;
+  public final Optional<List<Color>> colorTable;
   public final boolean isInterlaced;
   public final boolean colorTableIsSorted;
   public final int minimumCodeSize;
@@ -38,13 +41,15 @@ public class Image extends LabeledBlock {
     isInterlaced       =       ((packedFields >> 6) & 1) == 1;
     colorTableIsSorted =       ((packedFields >> 5) & 1) == 1;
 
-    Color[] table = null;
+    List<Color> table = null;
     if (hasColorTable) {
       var size         = 1 << (((packedFields >> 0) & 7) + 1);
 
-      table = new Color[size];
+      table = new ArrayList<>(size);
       for (var i=0; i < size; ++i)
-        table[i] = new Color(stream);
+        table.add(new Color(stream));
+
+      table = Collections.unmodifiableList(table);
     }
     colorTable = Optional.ofNullable(table);
 
@@ -72,7 +77,7 @@ public class Image extends LabeledBlock {
 
     var packedFields = colorTable.map(table -> {
       var packedSize = 0;
-      for (var left=table.length; left > 2; left >>= 1)
+      for (var left=table.size(); left > 2; left >>= 1)
         packedSize++;
 
       return (                     1 << 7    )  // has color table

@@ -3,6 +3,8 @@ package gif.block;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import gif.data.Color;
@@ -14,7 +16,7 @@ public class Screen extends Block {
   public final int height;
   public final int pixelAspectRatio;
   public final int colorResolution;
-  protected final Optional<Color[]> globalColorTable;
+  public final Optional<List<Color>> globalColorTable;
   public final boolean globalColorTableIsSorted;
   public final int backgroundColorIndex;
 
@@ -31,19 +33,15 @@ public class Screen extends Block {
     colorResolution          =        (packedFields >> 4) & 7;
     globalColorTableIsSorted =       ((packedFields >> 3) & 1) == 1;
 
-    Color[] table = null;
+    List<Color> table = null;
     if (hasGlobalColorTable) {
       var size               = 1 << (((packedFields >> 0) & 7) + 1);
 
-      table = new Color[size];
+      table = new ArrayList<>(size);
       for (var i=0; i < size; ++i)
-        table[i] = new Color(stream);
+        table.add(new Color(stream));
     }
     globalColorTable = Optional.ofNullable(table);
-  }
-
-  public Optional<Color[]> getGlobalColorTable() {
-    return globalColorTable.map(Color[]::clone);
   }
 
   @Override
@@ -54,7 +52,7 @@ public class Screen extends Block {
     var packedFields =    (colorResolution << 4)
                      | globalColorTable.map(table -> {
       int packedSize = 0;
-      for (var left=table.length; left > 2; left >>= 1)
+      for (var left=table.size(); left > 2; left >>= 1)
         packedSize++;
 
       return                            (1 << 7)      // has global color table
