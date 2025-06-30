@@ -19,16 +19,13 @@ public abstract class LabeledBlock extends Block {
     if (labelRead < 0)
       throw new UnexpectedEndOfStream();
 
-    switch (labelRead) {
-    case Extension.label:
-      return Extension.readFrom(stream);
-    case Image.label:
-      return new Image(stream, state);
-    case Trailer.label:
-      return new Trailer();
-    default:
-      throw new InvalidValue(Byte::format, "label", labelRead, Extension.label, Image.label, Trailer.label);
-    }
+    return switch (labelRead) {
+      case Extension.label -> Extension.readFrom(stream);
+      case     Image.label -> new Image(stream, state);
+      case   Trailer.label -> new Trailer();
+      default ->
+        throw new InvalidValue(Byte::format, "label", labelRead, Extension.label, Image.label, Trailer.label);
+    };
   }
 
   public boolean isGraphicRenderingBlock() {

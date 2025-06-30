@@ -15,11 +15,9 @@ public abstract class Extension extends LabeledBlock {
     if (labelRead < 0)
       throw new UnexpectedEndOfStream();
 
-    switch (labelRead) {
-    case GraphicControlExtension.label:
-      return new GraphicControlExtension(stream);
-    default:
-      return new UnknownExtension(stream, labelRead);
-    }
+    return switch (labelRead) {
+      case GraphicControlExtension.label -> new GraphicControlExtension(stream);
+      default                            -> new UnknownExtension(stream, labelRead);
+    };
   }
 }
