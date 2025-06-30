@@ -1,6 +1,6 @@
 package gif.data.format;
 
-public class ByteArray {
+public class ByteArrayFormatter {
   public static String format(int groupSize, byte[] data) {
     var output = "";
     var left = data.length;
@@ -16,6 +16,6 @@ public class ByteArray {
   }
 
   public static String format(byte[] a) {
-    return ByteArray.format(4, a);
+    return ByteArrayFormatter.format(4, a);
   }
 }

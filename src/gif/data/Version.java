@@ -8,7 +8,7 @@ import java.util.Arrays;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
 import gif.data.exception.UnexpectedEndOfStream;
-import gif.data.format.ByteArray;
+import gif.data.format.ByteArrayFormatter;
 
 public enum Version implements Serializable {
   VERSION_87A("87a".getBytes()),
@@ -35,7 +35,7 @@ public enum Version implements Serializable {
     }
 
     throw new InvalidValue(
-      ByteArray::format,
+      ByteArrayFormatter::format,
       "version",
       buffer,
       Arrays.stream(Version.values())

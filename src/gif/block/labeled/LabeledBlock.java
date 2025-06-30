@@ -9,7 +9,7 @@ import gif.data.State;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
 import gif.data.exception.UnexpectedEndOfStream;
-import gif.data.format.Byte;
+import gif.data.format.ByteFormatter;
 
 public abstract class LabeledBlock extends Block {
   public abstract int getLabel();
@@ -24,7 +24,7 @@ public abstract class LabeledBlock extends Block {
       case     Image.label -> new Image(stream, state);
       case   Trailer.label -> new Trailer();
       default ->
-        throw new InvalidValue(Byte::format, "label", labelRead, Extension.label, Image.label, Trailer.label);
+        throw new InvalidValue(ByteFormatter::format, "label", labelRead, Extension.label, Image.label, Trailer.label);
     };
   }
 

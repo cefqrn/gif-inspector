@@ -9,7 +9,7 @@ import gif.data.Version;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
 import gif.data.exception.UnexpectedEndOfStream;
-import gif.data.format.ByteArray;
+import gif.data.format.ByteArrayFormatter;
 
 public class Header extends Block {
   public final Version version;
@@ -21,7 +21,7 @@ public class Header extends Block {
     if (buffer.length != 3)
       throw new UnexpectedEndOfStream();
     if (!Arrays.equals(buffer, EXPECTED_SIGNATURE))
-      throw new InvalidValue(ByteArray::format, "signature", buffer, EXPECTED_SIGNATURE);
+      throw new InvalidValue(ByteArrayFormatter::format, "signature", buffer, EXPECTED_SIGNATURE);
 
     version = Version.readFrom(stream);
   }
