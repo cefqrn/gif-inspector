@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import gif.exception.ParseException;
 import gif.exception.UnexpectedEndOfStream;
@@ -34,5 +35,11 @@ public final class DataBlock {
 
       subBlocks.add(subBlock);
     }
+  }
+
+  public static int totalLengthOf(byte[][] dataBlock) {
+    return Arrays.stream(dataBlock)
+      .mapToInt(a -> a.length)
+      .sum();
   }
 }
