@@ -3,8 +3,8 @@ package gif.lzw;
 import java.util.ArrayList;
 import java.util.Arrays;
 
-import gif.exception.OutOfBounds;
-import gif.exception.ParseException;
+import gif.data.exception.OutOfBounds;
+import gif.data.exception.ParseException;
 
 public class Lzw {
   public static final int MAXIMUM_CODE_SIZE = 12;

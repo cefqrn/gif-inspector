@@ -4,8 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 
 import gif.block.labeled.LabeledBlock;
-import gif.exception.ParseException;
-import gif.exception.UnexpectedEndOfStream;
+import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
 
 public abstract class Extension extends LabeledBlock {
   public static final int label = 0x21;

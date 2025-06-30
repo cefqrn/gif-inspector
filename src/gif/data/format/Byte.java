@@ -1,4 +1,4 @@
-package gif.data;
+package gif.data.format;
 
 public class Byte {
   public static String format(int x) {

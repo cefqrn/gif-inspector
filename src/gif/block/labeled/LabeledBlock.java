@@ -5,11 +5,11 @@ import java.io.InputStream;
 
 import gif.block.Block;
 import gif.block.labeled.extension.Extension;
-import gif.data.Byte;
 import gif.data.State;
-import gif.exception.InvalidValue;
-import gif.exception.ParseException;
-import gif.exception.UnexpectedEndOfStream;
+import gif.data.exception.InvalidValue;
+import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
+import gif.data.format.Byte;
 
 public abstract class LabeledBlock extends Block {
   public abstract int getLabel();

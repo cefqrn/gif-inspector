@@ -7,10 +7,10 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import gif.exception.InvalidValue;
-import gif.exception.OutOfBounds;
-import gif.exception.ParseException;
-import gif.exception.UnexpectedEndOfStream;
+import gif.data.exception.InvalidValue;
+import gif.data.exception.OutOfBounds;
+import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
 
 public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
   public static DataBlock readFrom(InputStream stream) throws IOException, ParseException {
@@ -59,14 +59,14 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
   }
 
   public static final class SubBlock implements Serializable {
-    public final List<java.lang.Byte> data;
+    public final List<Byte> data;
 
     public SubBlock(byte[] data) throws OutOfBounds {
       var size = data.length;
       if (size < 1 || 255 < size)
         throw new OutOfBounds("SubBlock size", size, 1, 255);
 
-      var list = new ArrayList<java.lang.Byte>(size);
+      var list = new ArrayList<Byte>(size);
       for (var b : data)
         list.add(b);
 

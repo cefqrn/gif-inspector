@@ -13,7 +13,7 @@ import gif.data.Color;
 import gif.data.DataBlock;
 import gif.data.LittleEndian;
 import gif.data.State;
-import gif.exception.ParseException;
+import gif.data.exception.ParseException;
 
 public class Image extends LabeledBlock {
   public static final int label = 0x2c;

@@ -9,7 +9,7 @@ import java.util.Optional;
 
 import gif.data.Color;
 import gif.data.LittleEndian;
-import gif.exception.ParseException;
+import gif.data.exception.ParseException;
 
 public class Screen extends Block {
   public final int width;

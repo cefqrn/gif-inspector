@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import gif.data.DataBlock;
-import gif.exception.ParseException;
+import gif.data.exception.ParseException;
 
 public class UnknownExtension extends Extension {
   public final int label;

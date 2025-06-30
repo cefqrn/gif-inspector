@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.Iterator;
 
 import gif.data.DataBlock;
-import gif.exception.UnexpectedEndOfStream;
+import gif.data.exception.UnexpectedEndOfStream;
 
 public class BitStream {
   private final Iterator<Byte> data;

@@ -9,8 +9,8 @@ import java.util.Optional;
 
 import gif.data.DataBlock;
 import gif.data.LittleEndian;
-import gif.exception.OutOfBounds;
-import gif.exception.ParseException;
+import gif.data.exception.OutOfBounds;
+import gif.data.exception.ParseException;
 
 public class GraphicControlExtension extends Extension {
   public static final int label = 0xf9;

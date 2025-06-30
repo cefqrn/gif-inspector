@@ -5,11 +5,11 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import gif.data.ByteArray;
 import gif.data.Version;
-import gif.exception.InvalidValue;
-import gif.exception.ParseException;
-import gif.exception.UnexpectedEndOfStream;
+import gif.data.exception.InvalidValue;
+import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
+import gif.data.format.ByteArray;
 
 public class Header extends Block {
   public final Version version;

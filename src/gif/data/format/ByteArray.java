@@ -1,4 +1,4 @@
-package gif.data;
+package gif.data.format;
 
 public class ByteArray {
   public static String format(int groupSize, byte[] data) {

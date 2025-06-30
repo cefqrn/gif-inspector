@@ -16,7 +16,7 @@ import javafx.stage.FileChooser;
 import javafx.stage.Stage;
 
 import gif.Gif;
-import gif.data.ByteArray;
+import gif.data.format.ByteArray;
 
 public class Main extends Application {
   private File promptForFile(Stage stage, String title) {

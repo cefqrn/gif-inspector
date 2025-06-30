@@ -5,9 +5,10 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.Arrays;
 
-import gif.exception.InvalidValue;
-import gif.exception.ParseException;
-import gif.exception.UnexpectedEndOfStream;
+import gif.data.exception.InvalidValue;
+import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
+import gif.data.format.ByteArray;
 
 public enum Version implements Serializable {
   VERSION_87A("87a".getBytes()),

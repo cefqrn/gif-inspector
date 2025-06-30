@@ -13,7 +13,7 @@ import gif.block.labeled.Trailer;
 import gif.block.labeled.extension.GraphicControlExtension;
 import gif.data.Serializable;
 import gif.data.State;
-import gif.exception.ParseException;
+import gif.data.exception.ParseException;
 
 public class Gif implements Serializable {
   public final Header header;
