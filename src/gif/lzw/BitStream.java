@@ -11,10 +11,10 @@ public class BitStream {
   private int currentByte = 0;
   private int bitsLeftInCurrentByte = 0;
 
-  public BitStream(byte[][] dataBlock) {
-    var bytes = new ArrayList<Byte>(DataBlock.totalLengthOf(dataBlock));
-    for (var subBlock : dataBlock)
-      for (var b : subBlock)
+  public BitStream(DataBlock dataBlock) {
+    var bytes = new ArrayList<Byte>(dataBlock.totalSize());
+    for (var subBlock : dataBlock.subBlocks())
+      for (var b : subBlock.data)
         bytes.add(b);
 
     data = bytes.iterator();

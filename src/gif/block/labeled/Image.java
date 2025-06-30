@@ -3,7 +3,6 @@ package gif.block.labeled;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.Optional;
 
 import gif.block.labeled.extension.GraphicControlExtension;
@@ -24,7 +23,7 @@ public class Image extends LabeledBlock {
   public final boolean isInterlaced;
   public final boolean colorTableIsSorted;
   public final int minimumCodeSize;
-  protected final byte[][] data;
+  public final DataBlock data;
   public final Optional<GraphicControlExtension> graphicControlExtension;
 
   public Image(InputStream stream, State state) throws IOException, ParseException {
@@ -58,12 +57,6 @@ public class Image extends LabeledBlock {
   @Override
   public int getLabel() { return Image.label; }
 
-  public byte[][] getData() {
-    return Arrays.stream(data)
-      .map(byte[]::clone)
-      .toArray(byte[][]::new);
-  }
-
   @Override
   public void writeTo(OutputStream stream) throws IOException {
     // can't use ifPresent since writeTo throws
@@ -96,6 +89,6 @@ public class Image extends LabeledBlock {
     }
 
     LittleEndian.writeU8To(stream, minimumCodeSize);
-    DataBlock.writeTo(stream, data);
+    data.writeTo(stream);
   }
 }

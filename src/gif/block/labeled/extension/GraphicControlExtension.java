@@ -4,11 +4,12 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.List;
 import java.util.Optional;
 
 import gif.data.DataBlock;
 import gif.data.LittleEndian;
-import gif.exception.InvalidValue;
+import gif.exception.OutOfBounds;
 import gif.exception.ParseException;
 
 public class GraphicControlExtension extends Extension {
@@ -20,22 +21,17 @@ public class GraphicControlExtension extends Extension {
   public final Optional<Integer> transparentColorIndex;
 
   public GraphicControlExtension(InputStream stream) throws IOException, ParseException {
-    var blocks = DataBlock.readFrom(stream);
-    if (blocks.length != 1)
-      throw new InvalidValue("graphic control extension data subblock count", blocks.length, 1);
+    var datablock = DataBlock.readExpecting(stream, 4);
+    var data = datablock.subBlocks().get(0).data;
 
-    var data = blocks[0];
-    if (data.length != 4)
-      throw new InvalidValue("graphic control extension data length", data.length, 4);
+    delayTime = (data.get(2) << 8) | data.get(1);
 
-    delayTime = (data[2] << 8) | data[1];
-
-    var packedFields = data[0];
+    var packedFields = data.get(0);
     var hasTransparencyIndex = ((packedFields >> 0) & 1) == 1;
     waitsForUserInput        = ((packedFields >> 1) & 1) == 1;
     disposalMethod           = ((packedFields >> 2) & 7);
 
-    transparentColorIndex = hasTransparencyIndex ? Optional.of(Byte.toUnsignedInt(data[3])) : Optional.empty();
+    transparentColorIndex = hasTransparencyIndex ? Optional.of(Byte.toUnsignedInt(data.get(3))) : Optional.empty();
   }
 
   @Override
@@ -55,6 +51,8 @@ public class GraphicControlExtension extends Extension {
     LittleEndian.writeU16To(data, delayTime);
     LittleEndian.writeU8To(data, transparentColorIndex.orElse(0));
 
-    DataBlock.writeTo(stream, new byte[][]{data.toByteArray()});
+    try {
+      new DataBlock(List.of(new DataBlock.SubBlock(data.toByteArray()))).writeTo(stream);
+    } catch (OutOfBounds e) {}  // unreachable
   }
 }
