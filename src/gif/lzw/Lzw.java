@@ -10,17 +10,13 @@ public class Lzw {
   public static final int MAXIMUM_CODE_SIZE = 12;
 
   public static ArrayList<Integer> decode(BitStream stream, int minimumCodeSize) throws ParseException {
-    var codes = new ArrayList<Code>((1 << minimumCodeSize) + 2);
-    for (var i=0; i < (1 << minimumCodeSize); ++i)
-      codes.add(new Code.Pattern(new int[]{i}));
+    var codes = getInitialCodes(minimumCodeSize);
+    var codeSize = minimumCodeSize + 1;
 
-    codes.add(Code.CLEAR);
-    codes.add(Code.END_OF_INFORMATION);
+    Code.Pattern previousPattern = null;
 
     var result = new ArrayList<Integer>();
 
-    var codeSize = minimumCodeSize + 1;
-    Code.Pattern previousPattern = null;
     while (true) {
       var codeIndex = stream.read(codeSize);
 
@@ -30,7 +26,7 @@ public class Lzw {
       Code code = null;
       if (codeIndex < codes.size()) {
         code = codes.get(codeIndex);
-      } else if (codeIndex == codes.size() && !reachedLastPattern) {
+      } else if (codeIndex == codes.size() && !reachedLastPattern && previousPattern != null) {
         code = previousPattern.extended();
       } else {
         throw new OutOfBounds("LZW code table index", codeIndex, 0, codes.size() - 1);
@@ -40,8 +36,12 @@ public class Lzw {
         break;
 
       if (code == Code.CLEAR) {
-        result.addAll(decode(stream, minimumCodeSize));
-        break;
+        codes = getInitialCodes(minimumCodeSize);
+        codeSize = minimumCodeSize + 1;
+
+        previousPattern = null;
+
+        continue;
       }
 
       var pattern = (Code.Pattern)code;
@@ -57,10 +57,21 @@ public class Lzw {
           codeSize++;
       }
 
-      previousPattern = (Code.Pattern)code;
+      previousPattern = pattern;
     }
 
     return result;
+  }
+
+  private static ArrayList<Code> getInitialCodes(int minimumCodeSize) {
+    var codes = new ArrayList<Code>((1 << minimumCodeSize) + 2);
+    for (var i=0; i < (1 << minimumCodeSize); ++i)
+      codes.add(new Code.Pattern(new int[]{i}));
+
+    codes.add(Code.CLEAR);
+    codes.add(Code.END_OF_INFORMATION);
+
+    return codes;
   }
 
   private static class Code {
