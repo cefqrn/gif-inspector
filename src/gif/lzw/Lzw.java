@@ -22,43 +22,41 @@ public class Lzw {
       var codeIndex = stream.read(codeSize);
 
       var isLastPatternForCurrentSize = codes.size() == (1 << codeSize) - 1;
-      var reachedLastPattern = isLastPatternForCurrentSize && codeSize == MAXIMUM_CODE_SIZE;
+      var reachedMaxCodeCount = isLastPatternForCurrentSize && codeSize == MAXIMUM_CODE_SIZE;
 
       Code code = null;
       if (codeIndex < codes.size()) {
         code = codes.get(codeIndex);
-      } else if (codeIndex == codes.size() && !reachedLastPattern && previousPattern != null) {
-        code = previousPattern.extended();
+      } else if (codeIndex == codes.size() && !reachedMaxCodeCount && previousPattern != null) {
+        code = previousPattern.extendedWith(previousPattern.values.getFirst());
       } else {
         throw new OutOfBounds("LZW code table index", codeIndex, 0, codes.size() - 1);
       }
 
-      if (code == Code.END_OF_INFORMATION)
-        return result;
+      switch (code) {
+        case Code.EndOfInformationCode c -> { return result; }
+        case Code.ClearCode c -> {
+          codes = getInitialCodes(minimumCodeSize);
+          codeSize = minimumCodeSize + 1;
 
-      if (code == Code.CLEAR) {
-        codes = getInitialCodes(minimumCodeSize);
-        codeSize = minimumCodeSize + 1;
+          previousPattern = null;
+        }
+        case Code.Pattern pattern
+        when reachedMaxCodeCount -> {
+          result.addAll(pattern.values);
+        }
+        case Code.Pattern pattern -> {
+          result.addAll(pattern.values);
 
-        previousPattern = null;
+          if (previousPattern != null) {
+            codes.add(previousPattern.extendedWith(pattern.values.getFirst()));
+            if (isLastPatternForCurrentSize)
+              codeSize++;
+          }
 
-        continue;
+          previousPattern = pattern;
+        }
       }
-
-      var pattern = (Code.Pattern)code;
-
-      result.addAll(pattern.values);
-
-      if (reachedLastPattern)
-        continue;
-
-      if (previousPattern != null) {
-        codes.add(previousPattern.with(pattern.values.getFirst()));
-        if (isLastPatternForCurrentSize)
-          codeSize++;
-      }
-
-      previousPattern = pattern;
     }
   }
 
@@ -67,29 +65,21 @@ public class Lzw {
     for (var i=0; i < (1 << minimumCodeSize); ++i)
       codes.add(new Code.Pattern(List.of(i)));
 
-    codes.add(Code.CLEAR);
-    codes.add(Code.END_OF_INFORMATION);
+    codes.add(new Code.ClearCode());
+    codes.add(new Code.EndOfInformationCode());
 
     return codes;
   }
 
   private static sealed interface Code {
-    static final ClearCode CLEAR = new ClearCode();
-    static final EndOfInformationCode END_OF_INFORMATION = new EndOfInformationCode();
-
     record ClearCode()                   implements Code {}
     record EndOfInformationCode()        implements Code {}
-
     record Pattern(List<Integer> values) implements Code {
-      public Pattern with(int value) {
+      public Pattern extendedWith(int value) {
         var newValues = new ArrayList<>(values);
         newValues.add(value);
 
         return new Pattern(Collections.unmodifiableList(newValues));
-      }
-
-      public Pattern extended() {
-        return this.with(values.getFirst());
       }
     }
   }
