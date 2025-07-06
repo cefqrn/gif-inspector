@@ -13,7 +13,7 @@ import gif.data.exception.OutOfBounds;
 import gif.data.exception.ParseException;
 
 public class GraphicControlExtension extends Extension {
-  public static final int label = 0xf9;
+  public static final byte label = (byte)0xf9;
 
   public final int disposalMethod;
   public final boolean waitsForUserInput;
@@ -35,7 +35,7 @@ public class GraphicControlExtension extends Extension {
   }
 
   @Override
-  public int getLabel() { return GraphicControlExtension.label; }
+  public byte getLabel() { return GraphicControlExtension.label; }
 
   public void writeTo(OutputStream stream) throws IOException {
     stream.write(Extension.label);

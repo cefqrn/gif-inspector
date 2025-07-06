@@ -8,16 +8,16 @@ import gif.data.DataBlock;
 import gif.data.exception.ParseException;
 
 public class UnknownExtension extends Extension {
-  public final int label;
+  public final byte label;
   public final DataBlock data;
 
-  public UnknownExtension(InputStream stream, int label) throws IOException, ParseException {
+  public UnknownExtension(InputStream stream, byte label) throws IOException, ParseException {
     this.label = label;
     this.data = DataBlock.readFrom(stream);
   }
 
   @Override
-  public int getLabel() { return label; }
+  public byte getLabel() { return label; }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {

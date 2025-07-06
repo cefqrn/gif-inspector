@@ -12,34 +12,34 @@ import gif.data.exception.UnexpectedEndOfStream;
 import gif.data.format.ByteFormatter;
 
 public abstract class LabeledBlock extends Block {
-  public abstract int getLabel();
+  public abstract byte getLabel();
 
   public static LabeledBlock readFrom(InputStream stream, State state) throws IOException, ParseException {
-    int labelRead = stream.read();
+    var labelRead = stream.read();
     if (labelRead < 0)
       throw new UnexpectedEndOfStream();
 
-    return switch (labelRead) {
+    return switch ((byte)labelRead) {
       case Extension.label -> Extension.readFrom(stream);
       case     Image.label -> new Image(stream, state);
       case   Trailer.label -> new Trailer();
       default ->
-        throw new InvalidValue(ByteFormatter::format, "label", labelRead, Extension.label, Image.label, Trailer.label);
+        throw new InvalidValue(ByteFormatter::format, "label", (byte)labelRead, Extension.label, Image.label, Trailer.label);
     };
   }
 
   public boolean isGraphicRenderingBlock() {
-    var label = getLabel();
+    var label = Byte.toUnsignedInt(getLabel());
     return 0x00 <= label && label <= 0x7f && !(this instanceof Trailer);
   }
 
   public boolean isControlBlock() {
-    var label = getLabel();
+    var label = Byte.toUnsignedInt(getLabel());
     return 0x80 <= label && label <= 0xf9;
   }
 
   public boolean isSpecialPurposeBlock() {
-    var label = getLabel();
+    var label = Byte.toUnsignedInt(getLabel());
     return 0xfa <= label && label <= 0xff;
   }
 }

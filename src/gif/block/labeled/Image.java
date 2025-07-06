@@ -16,7 +16,7 @@ import gif.data.State;
 import gif.data.exception.ParseException;
 
 public class Image extends LabeledBlock {
-  public static final int label = 0x2c;
+  public static final byte label = 0x2c;
 
   public final int left;
   public final int top;
@@ -60,7 +60,7 @@ public class Image extends LabeledBlock {
   }
 
   @Override
-  public int getLabel() { return Image.label; }
+  public byte getLabel() { return Image.label; }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
