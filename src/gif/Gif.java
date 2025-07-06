@@ -28,24 +28,24 @@ public class Gif implements Serializable {
     var blocks = new ArrayList<LabeledBlock>();
     var state = new State();
     while (true) {
-      var block = LabeledBlock.readFrom(stream, state);
-      if (block instanceof Trailer) {
-        trailer = (Trailer)block;
-        break;
+      switch (LabeledBlock.readFrom(stream, state)) {
+        case Trailer trailer -> {
+          this.trailer = trailer;
+          this.blocks = blocks.toArray(LabeledBlock[]::new);
+
+          return;
+        }
+        case GraphicControlExtension graphicControlExtension -> {
+          state.graphicControlExtension = Optional.of(graphicControlExtension);
+        }
+        case LabeledBlock block -> {
+          if (block.isGraphicRenderingBlock())
+            state = new State();  // clear control blocks
+
+          blocks.add(block);
+        }
       }
-
-      if (block instanceof GraphicControlExtension) {
-        state.graphicControlExtension = Optional.of((GraphicControlExtension)block);
-        continue;
-      }
-
-      if (block.isGraphicRenderingBlock())
-        state = new State();  // clear control blocks
-
-      blocks.add(block);
     }
-
-    this.blocks = blocks.toArray(LabeledBlock[]::new);
   }
 
   public LabeledBlock[] getBlocks() { return blocks.clone(); }
