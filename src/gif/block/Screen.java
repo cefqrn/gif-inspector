@@ -8,8 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 import gif.data.Color;
-import gif.data.LittleEndian;
-import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
+import gif.module.Read;
+import gif.module.Write;
 
 public class Screen extends Block {
   public final int width;
@@ -20,14 +21,14 @@ public class Screen extends Block {
   public final boolean globalColorTableIsSorted;
   public final int backgroundColorIndex;
 
-  public Screen(InputStream stream) throws IOException, ParseException {
-    width = LittleEndian.readU16From(stream);
-    height = LittleEndian.readU16From(stream);
+  public Screen(InputStream stream) throws IOException, UnexpectedEndOfStream {
+    width = Read.U16From(stream);
+    height = Read.U16From(stream);
 
-    var packedFields = LittleEndian.readU8From(stream);
+    var packedFields = Read.U8From(stream);
 
-    backgroundColorIndex = LittleEndian.readU8From(stream);
-    pixelAspectRatio = LittleEndian.readU8From(stream);
+    backgroundColorIndex = Read.U8From(stream);
+    pixelAspectRatio = Read.U8From(stream);
 
     var hasGlobalColorTable  =        (packedFields >> 7) == 1;
     colorResolution          =        (packedFields >> 4) & 7;
@@ -46,8 +47,8 @@ public class Screen extends Block {
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
-    LittleEndian.writeU16To(stream, width);
-    LittleEndian.writeU16To(stream, height);
+    Write.U16To(stream, width);
+    Write.U16To(stream, height);
 
     var packedFields =    (colorResolution << 4)
                      | globalColorTable.map(table -> {
@@ -59,10 +60,10 @@ public class Screen extends Block {
            | (globalColorTableIsSorted ? 1 << 3 : 0)
            |                   (packedSize << 0);
     }).orElse(0);
-    LittleEndian.writeU8To(stream, packedFields);
+    Write.U8To(stream, packedFields);
 
-    LittleEndian.writeU8To(stream, backgroundColorIndex);
-    LittleEndian.writeU8To(stream, pixelAspectRatio);
+    Write.U8To(stream, backgroundColorIndex);
+    Write.U8To(stream, pixelAspectRatio);
 
     // can't use ifPresent since Color.writeTo throws
     if (globalColorTable.isPresent()) {

@@ -11,9 +11,10 @@ import java.util.Optional;
 import gif.block.labeled.extension.GraphicControlExtension;
 import gif.data.Color;
 import gif.data.DataBlock;
-import gif.data.LittleEndian;
 import gif.data.State;
 import gif.data.exception.ParseException;
+import gif.module.Read;
+import gif.module.Write;
 
 public class Image extends LabeledBlock {
   public static final byte label = 0x2c;
@@ -30,12 +31,12 @@ public class Image extends LabeledBlock {
   public final Optional<GraphicControlExtension> graphicControlExtension;
 
   public Image(InputStream stream, State state) throws IOException, ParseException {
-    left   = LittleEndian.readU16From(stream);
-    top    = LittleEndian.readU16From(stream);
-    width  = LittleEndian.readU16From(stream);
-    height = LittleEndian.readU16From(stream);
+    left   = Read.U16From(stream);
+    top    = Read.U16From(stream);
+    width  = Read.U16From(stream);
+    height = Read.U16From(stream);
 
-    var packedFields = LittleEndian.readU8From(stream);
+    var packedFields = Read.U8From(stream);
 
     var hasColorTable  =       ((packedFields >> 7) & 1) == 1;
     isInterlaced       =       ((packedFields >> 6) & 1) == 1;
@@ -53,7 +54,7 @@ public class Image extends LabeledBlock {
     }
     colorTable = Optional.ofNullable(table);
 
-    minimumCodeSize = LittleEndian.readU8From(stream);
+    minimumCodeSize = Read.U8From(stream);
     data = DataBlock.readFrom(stream);
 
     graphicControlExtension = state.graphicControlExtension;
@@ -70,10 +71,10 @@ public class Image extends LabeledBlock {
 
     stream.write(Image.label);
 
-    LittleEndian.writeU16To(stream, left  );
-    LittleEndian.writeU16To(stream, top   );
-    LittleEndian.writeU16To(stream, width );
-    LittleEndian.writeU16To(stream, height);
+    Write.U16To(stream, left  );
+    Write.U16To(stream, top   );
+    Write.U16To(stream, width );
+    Write.U16To(stream, height);
 
     var packedFields = colorTable.map(table -> {
       var packedSize = 0;
@@ -85,7 +86,7 @@ public class Image extends LabeledBlock {
            | (colorTableIsSorted ? 1 << 5 : 0)
            | (packedSize             << 0    );
     }).orElse(0);
-    LittleEndian.writeU8To(stream, packedFields);
+    Write.U8To(stream, packedFields);
 
     // can't use ifPresent since writeTo throws
     if (colorTable.isPresent()) {
@@ -93,7 +94,7 @@ public class Image extends LabeledBlock {
         color.writeTo(stream);
     }
 
-    LittleEndian.writeU8To(stream, minimumCodeSize);
+    Write.U8To(stream, minimumCodeSize);
     data.writeTo(stream);
   }
 }

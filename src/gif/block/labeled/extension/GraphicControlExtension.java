@@ -8,9 +8,9 @@ import java.util.List;
 import java.util.Optional;
 
 import gif.data.DataBlock;
-import gif.data.LittleEndian;
 import gif.data.exception.OutOfBounds;
 import gif.data.exception.ParseException;
+import gif.module.Write;
 
 public class GraphicControlExtension extends Extension {
   public static final byte label = (byte)0xf9;
@@ -46,10 +46,10 @@ public class GraphicControlExtension extends Extension {
     var packedFields = (transparentColorIndex.isPresent() ? (1 << 0) : 0)
                      |                 (waitsForUserInput ? (1 << 1) : 0)
                      |                         (disposalMethod << 2);
-    LittleEndian.writeU8To(data, packedFields);
+    Write.U8To(data, packedFields);
 
-    LittleEndian.writeU16To(data, delayTime);
-    LittleEndian.writeU8To(data, transparentColorIndex.orElse(0));
+    Write.U16To(data, delayTime);
+    Write.U8To(data, transparentColorIndex.orElse(0));
 
     try {
       new DataBlock(List.of(new DataBlock.SubBlock(data.toByteArray()))).writeTo(stream);

@@ -10,24 +10,17 @@ import java.util.List;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.OutOfBounds;
 import gif.data.exception.ParseException;
-import gif.data.exception.UnexpectedEndOfStream;
+import gif.module.Read;
 
 public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
   public static DataBlock readFrom(InputStream stream) throws IOException, ParseException {
     var subBlocks = new ArrayList<SubBlock>();
     while (true) {
-      var length = stream.read();
-      if (length < 0)
-        throw new UnexpectedEndOfStream();
-
+      var length = Read.U8From(stream);
       if (length == 0)
         return new DataBlock(Collections.unmodifiableList(subBlocks));
 
-      var subBlock = new SubBlock(stream.readNBytes(length));
-      if (subBlock.data.size() < length)
-        throw new UnexpectedEndOfStream();
-
-      subBlocks.add(subBlock);
+      subBlocks.add(new SubBlock(Read.byteArrayFrom(stream, length)));
     }
   }
 

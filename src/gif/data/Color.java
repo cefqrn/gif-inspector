@@ -4,7 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import gif.data.exception.ParseException;
+import gif.data.exception.UnexpectedEndOfStream;
+import gif.module.Read;
+import gif.module.Write;
 
 public class Color implements Serializable {
   public final int red;
@@ -12,17 +14,17 @@ public class Color implements Serializable {
   public final int blue;
   public final boolean isTransparent;
 
-  public Color(InputStream stream) throws IOException, ParseException {
-    red   = LittleEndian.readU8From(stream);
-    green = LittleEndian.readU8From(stream);
-    blue  = LittleEndian.readU8From(stream);
+  public Color(InputStream stream) throws IOException, UnexpectedEndOfStream {
+    red   = Read.U8From(stream);
+    green = Read.U8From(stream);
+    blue  = Read.U8From(stream);
     isTransparent = false;
   }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
-    LittleEndian.writeU8To(stream, red);
-    LittleEndian.writeU8To(stream, green);
-    LittleEndian.writeU8To(stream, blue);
+    Write.U8To(stream, red);
+    Write.U8To(stream, green);
+    Write.U8To(stream, blue);
   }
 }

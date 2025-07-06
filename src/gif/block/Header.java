@@ -8,8 +8,8 @@ import java.io.OutputStream;
 import gif.data.Version;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
-import gif.data.exception.UnexpectedEndOfStream;
 import gif.data.format.ByteArrayFormatter;
+import gif.module.Read;
 
 public class Header extends Block {
   public final Version version;
@@ -17,9 +17,7 @@ public class Header extends Block {
   protected static final byte[] EXPECTED_SIGNATURE = "GIF".getBytes();
 
   public Header(InputStream stream) throws IOException, ParseException {
-    var buffer = stream.readNBytes(3);
-    if (buffer.length != 3)
-      throw new UnexpectedEndOfStream();
+    var buffer = Read.byteArrayFrom(stream, 3);
     if (!Arrays.equals(buffer, EXPECTED_SIGNATURE))
       throw new InvalidValue(ByteArrayFormatter::format, "signature", buffer, EXPECTED_SIGNATURE);
 

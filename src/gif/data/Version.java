@@ -7,8 +7,8 @@ import java.util.Arrays;
 
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
-import gif.data.exception.UnexpectedEndOfStream;
 import gif.data.format.ByteArrayFormatter;
+import gif.module.Read;
 
 public enum Version implements Serializable {
   VERSION_87A("87a".getBytes()),
@@ -25,9 +25,7 @@ public enum Version implements Serializable {
   }
 
   public static Version readFrom(InputStream stream) throws IOException, ParseException {
-    var buffer = stream.readNBytes(3);
-    if (buffer.length != 3)
-      throw new UnexpectedEndOfStream();
+    var buffer = Read.byteArrayFrom(stream, 3);
 
     for (var version : Version.values()) {
       if (Arrays.equals(buffer, version.getData()))
