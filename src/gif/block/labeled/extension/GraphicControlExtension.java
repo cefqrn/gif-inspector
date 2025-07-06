@@ -24,7 +24,7 @@ public class GraphicControlExtension extends Extension {
     var datablock = DataBlock.readExpecting(stream, 4);
     var data = datablock.subBlocks().get(0).data;
 
-    delayTime = (data.get(2) << 8) | data.get(1);
+    delayTime = (Byte.toUnsignedInt(data.get(2)) << 8) | Byte.toUnsignedInt(data.get(1));
 
     var packedFields = data.get(0);
     var hasTransparencyIndex = ((packedFields >> 0) & 1) == 1;
