@@ -8,17 +8,19 @@ import gif.data.exception.UnexpectedEndOfStream;
 import gif.module.Read;
 import gif.module.Write;
 
-public class Color implements Serializable {
-  public final int red;
-  public final int green;
-  public final int blue;
-  public final boolean isTransparent;
+public record Color(int red, int green, int blue) implements Serializable {
+  public Color(int red, int green, int blue) {
+    if (red   < 0 || red   > 255) throw new IllegalArgumentException("color values must be between 0 and 255 (got red="   + red   + ")");
+    if (green < 0 || green > 255) throw new IllegalArgumentException("color values must be between 0 and 255 (got green=" + green + ")");
+    if (blue  < 0 || blue  > 255) throw new IllegalArgumentException("color values must be between 0 and 255 (got blue="  + blue  + ")");
+
+    this.red   = red;
+    this.green = green;
+    this.blue  = blue;
+  }
 
   public Color(InputStream stream) throws IOException, UnexpectedEndOfStream {
-    red   = Read.U8From(stream);
-    green = Read.U8From(stream);
-    blue  = Read.U8From(stream);
-    isTransparent = false;
+    this(Read.U8From(stream), Read.U8From(stream), Read.U8From(stream));
   }
 
   @Override
