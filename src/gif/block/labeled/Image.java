@@ -11,8 +11,12 @@ import java.util.Optional;
 import gif.block.labeled.extension.GraphicControlExtension;
 import gif.data.Color;
 import gif.data.DataBlock;
+import gif.data.Pixel;
 import gif.data.State;
+import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
+import gif.lzw.BitStream;
+import gif.lzw.Lzw;
 import gif.module.Read;
 import gif.module.Write;
 
@@ -62,6 +66,34 @@ public class Image extends LabeledBlock {
 
   @Override
   public byte getLabel() { return Image.label; }
+
+  public Pixel[][] getPixels(Optional<List<Color>> globalColorTable) throws ParseException {
+    var indices = Lzw.decode(new BitStream(data), minimumCodeSize);
+
+    var expectedPixelCount = width * height;
+    if (indices.size() != expectedPixelCount)
+      throw new InvalidValue("image data pixel count", indices.size(), expectedPixelCount);
+
+    var colors = this.colorTable
+      .or(() -> globalColorTable)
+      .orElseThrow(() -> new ParseException("no color table"));
+
+    var transparentColorIndex = graphicControlExtension
+      .flatMap(e -> e.transparentColorIndex)
+      .orElse(-1);
+
+    var possibleValues = new Pixel[colors.size()];
+    for (var i=0; i < colors.size(); ++i)
+      possibleValues[i] = new Pixel(colors.get(i), i == transparentColorIndex);
+
+    var indicesLeft = indices.iterator();
+    var result = new Pixel[height][width];
+    for (var row : result)
+      for (var x=0; x < width; ++x)
+        row[x] = possibleValues[indicesLeft.next()];
+
+    return result;
+  }
 
   @Override
   public void writeTo(OutputStream stream) throws IOException {
