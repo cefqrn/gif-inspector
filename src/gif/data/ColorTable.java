@@ -6,7 +6,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
+import gif.data.exception.InvalidValue;
 import gif.data.exception.UnexpectedEndOfStream;
 
 public record ColorTable(List<Color> colors, boolean isSorted) implements Serializable {
@@ -17,10 +19,12 @@ public record ColorTable(List<Color> colors, boolean isSorted) implements Serial
         sizeIsAValidPowerOf2 = true;
 
     if (!sizeIsAValidPowerOf2)
-      throw new IllegalArgumentException(
+      throw new InvalidValue(
         "color table size must be a power of 2 between 2 and 256 (got " + colors.size() + ")");
 
-    this.colors = List.copyOf(colors);
+    colors.stream().forEach(Objects::requireNonNull);
+
+    this.colors   = List.copyOf(colors);
     this.isSorted = isSorted;
   }
 

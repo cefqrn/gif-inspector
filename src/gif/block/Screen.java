@@ -89,13 +89,8 @@ public record Screen(
 
   public record GlobalColorTable(ColorTable colorTable, int backgroundColorIndex) {
     public GlobalColorTable(ColorTable colorTable, int backgroundColorIndex) {
-      if (backgroundColorIndex < 0 || colorTable.colors().size() <= backgroundColorIndex)
-        throw new IllegalArgumentException(
-          "background color index must be a valid index into the color table " +
-          "(expected between 0 and " + colorTable.colors().size() + ", got" + backgroundColorIndex + ")");
-
-      this.colorTable = Objects.requireNonNull(colorTable);
-      this.backgroundColorIndex = backgroundColorIndex;
+      this.colorTable           = Objects.requireNonNull(colorTable);
+      this.backgroundColorIndex = OutOfBounds.check("background color index", backgroundColorIndex, 0, colorTable.colors().size() - 1);
     }
 
     public static GlobalColorTable readFrom(InputStream stream, int packedSize, boolean isSorted, int backgroundColorIndex) throws IOException, UnexpectedEndOfStream {

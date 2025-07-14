@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 
 import gif.data.exception.InvalidValue;
 import gif.data.exception.OutOfBounds;
@@ -13,6 +14,11 @@ import gif.data.exception.ParseException;
 import gif.module.Read;
 
 public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
+  public DataBlock(List<SubBlock> subBlocks) {
+    subBlocks.stream().forEach(Objects::requireNonNull);
+    this.subBlocks = List.copyOf(subBlocks);
+  }
+
   public static DataBlock readFrom(InputStream stream) throws IOException, ParseException {
     var subBlocks = new ArrayList<SubBlock>();
     while (true) {
