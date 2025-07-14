@@ -3,6 +3,7 @@ package gif.block.labeled;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 import java.util.Optional;
 
 import gif.block.Screen.GlobalColorTable;
@@ -19,32 +20,45 @@ import gif.lzw.Lzw;
 import gif.module.Read;
 import gif.module.Write;
 
-public class Image implements LabeledBlock {
+public record Image(
+  int left,
+  int top,
+  int width,
+  int height,
+  Optional<ColorTable> colorTable,
+  boolean isInterlaced,
+  int minimumCodeSize,
+  DataBlock data,
+  Optional<GraphicControlExtension> graphicControlExtension
+) implements LabeledBlock {
   public static final byte label = 0x2c;
 
-  public final int left;
-  public final int top;
-  public final int width;
-  public final int height;
-  public final Optional<ColorTable> colorTable;
-  public final boolean isInterlaced;
-  public final int minimumCodeSize;
-  public final DataBlock data;
-  public final Optional<GraphicControlExtension> graphicControlExtension;
+  public Image(int left, int top, int width, int height, Optional<ColorTable> colorTable, boolean isInterlaced, int minimumCodeSize, DataBlock data, Optional<GraphicControlExtension> graphicControlExtension) {
+    this.left                    = OutOfBounds.check("left",   left,   0, 0xffff);
+    this.top                     = OutOfBounds.check("top",    top,    0, 0xffff);
+    this.width                   = OutOfBounds.check("width",  width,  0, 0xffff);
+    this.height                  = OutOfBounds.check("height", height, 0, 0xffff);
+    this.colorTable              = colorTable.map(Objects::requireNonNull);
+    this.isInterlaced            = isInterlaced;
+    this.minimumCodeSize         = OutOfBounds.check("minimum code size", minimumCodeSize, 0, 11);  // minimum size of 11 gives initial size of 12, which is the max
+    this.data                    = Objects.requireNonNull(data);
+    this.graphicControlExtension = graphicControlExtension.map(Objects::requireNonNull);
+  }
 
-  public Image(InputStream stream, State state) throws IOException, ParseException {
-    left   = Read.U16From(stream);
-    top    = Read.U16From(stream);
-    width  = Read.U16From(stream);
-    height = Read.U16From(stream);
+  public static Image readFrom(InputStream stream, State state) throws IOException, ParseException {
+    var left   = Read.U16From(stream);
+    var top    = Read.U16From(stream);
+    var width  = Read.U16From(stream);
+    var height = Read.U16From(stream);
 
     var packedFields = Read.U8From(stream);
 
     var hasColorTable = ((packedFields >> 7) & 1) == 1;
-    isInterlaced      = ((packedFields >> 6) & 1) == 1;
+    var isInterlaced  = ((packedFields >> 6) & 1) == 1;
 
     var isSorted      = ((packedFields >> 5) & 1) == 1;
     var packedSize    =  (packedFields >> 0) & 7;
+    Optional<ColorTable> colorTable = Optional.empty();
     if (hasColorTable) {
       var table = ColorTable.readFrom(stream, packedSize, isSorted);
       state.graphicControlExtension
@@ -58,14 +72,14 @@ public class Image implements LabeledBlock {
 
       if (packedSize != 0)
         System.err.println("WARNING: missing local color table has nonzero packed size");
-
-      colorTable = Optional.empty();
     }
 
-    minimumCodeSize = Read.U8From(stream);
-    data = DataBlock.readFrom(stream);
+    var minimumCodeSize = Read.U8From(stream);
+    var data = DataBlock.readFrom(stream);
 
-    graphicControlExtension = state.graphicControlExtension;
+    var graphicControlExtension = state.graphicControlExtension;
+
+    return new Image(left, top, width, height, colorTable, isInterlaced, minimumCodeSize, data, graphicControlExtension);
   }
 
   @Override

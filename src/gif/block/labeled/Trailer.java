@@ -3,7 +3,7 @@ package gif.block.labeled;
 import java.io.IOException;
 import java.io.OutputStream;
 
-public class Trailer implements LabeledBlock {
+public record Trailer() implements LabeledBlock {
   public static final byte label = 0x3b;
 
   @Override

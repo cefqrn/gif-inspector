@@ -18,7 +18,7 @@ public interface LabeledBlock extends Block {
     var label = Read.byteFrom(stream);
     return switch (label) {
       case Extension.label -> Extension.readFrom(stream);
-      case     Image.label -> new Image(stream, state);
+      case     Image.label -> Image.readFrom(stream, state);
       case   Trailer.label -> new Trailer();
       default ->
         throw new InvalidValue(ByteFormatter::format, "label", label, Extension.label, Image.label, Trailer.label);
