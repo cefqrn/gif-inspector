@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import gif.data.DataBlock;
 import gif.data.exception.ParseException;
 
-public class UnknownExtension extends Extension {
+public class UnknownExtension implements Extension {
   public final byte label;
   public final DataBlock data;
 

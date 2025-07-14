@@ -19,7 +19,7 @@ import gif.lzw.Lzw;
 import gif.module.Read;
 import gif.module.Write;
 
-public class Image extends LabeledBlock {
+public class Image implements LabeledBlock {
   public static final byte label = 0x2c;
 
   public final int left;

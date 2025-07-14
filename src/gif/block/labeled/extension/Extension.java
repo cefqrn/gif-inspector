@@ -7,7 +7,7 @@ import gif.block.labeled.LabeledBlock;
 import gif.data.exception.ParseException;
 import gif.module.Read;
 
-public abstract class Extension extends LabeledBlock {
+public interface Extension extends LabeledBlock {
   public static final byte label = 0x21;
 
   public static Extension readFrom(InputStream stream) throws IOException, ParseException {

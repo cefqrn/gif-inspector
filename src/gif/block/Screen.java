@@ -11,7 +11,7 @@ import gif.data.exception.UnexpectedEndOfStream;
 import gif.module.Read;
 import gif.module.Write;
 
-public class Screen extends Block {
+public class Screen implements Block {
   public final int width;
   public final int height;
   public final int pixelAspectRatio;

@@ -12,7 +12,7 @@ import gif.data.exception.OutOfBounds;
 import gif.data.exception.ParseException;
 import gif.module.Write;
 
-public class GraphicControlExtension extends Extension {
+public class GraphicControlExtension implements Extension {
   public static final byte label = (byte)0xf9;
 
   public final int disposalMethod;

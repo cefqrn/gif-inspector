@@ -11,7 +11,7 @@ import gif.data.exception.ParseException;
 import gif.data.format.ByteArrayFormatter;
 import gif.module.Read;
 
-public class Header extends Block {
+public class Header implements Block {
   public final Version version;
 
   protected static final byte[] EXPECTED_SIGNATURE = "GIF".getBytes();

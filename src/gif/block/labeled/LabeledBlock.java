@@ -11,8 +11,8 @@ import gif.data.exception.ParseException;
 import gif.data.format.ByteFormatter;
 import gif.module.Read;
 
-public abstract class LabeledBlock extends Block {
-  public abstract byte getLabel();
+public interface LabeledBlock extends Block {
+  byte getLabel();
 
   public static LabeledBlock readFrom(InputStream stream, State state) throws IOException, ParseException {
     var label = Read.byteFrom(stream);
@@ -25,17 +25,17 @@ public abstract class LabeledBlock extends Block {
     };
   }
 
-  public boolean isGraphicRenderingBlock() {
+  default boolean isGraphicRenderingBlock() {
     var label = Byte.toUnsignedInt(getLabel());
-    return 0x00 <= label && label <= 0x7f && !(this instanceof Trailer);
+    return 0x00 <= label && label <= 0x7f;
   }
 
-  public boolean isControlBlock() {
+  default boolean isControlBlock() {
     var label = Byte.toUnsignedInt(getLabel());
     return 0x80 <= label && label <= 0xf9;
   }
 
-  public boolean isSpecialPurposeBlock() {
+  default boolean isSpecialPurposeBlock() {
     var label = Byte.toUnsignedInt(getLabel());
     return 0xfa <= label && label <= 0xff;
   }
