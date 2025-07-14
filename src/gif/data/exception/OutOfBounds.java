@@ -16,4 +16,15 @@ public class OutOfBounds extends InvalidValue {
   public <T> OutOfBounds(String name, T got, T lowerBound, T upperBound) {
     this(T::toString, name, got, lowerBound, upperBound);
   }
+
+  public static <T extends Comparable<T>> T check(Function<T, String> format, String name, T value, T lowerBound, T upperBound) throws OutOfBounds {
+    if (value.compareTo(lowerBound) < 0 || value.compareTo(upperBound) > 0)
+      throw new OutOfBounds(format, name, value, lowerBound, upperBound);
+
+    return value;
+  }
+
+  public static <T extends Comparable<T>> T check(String name, T value, T lowerBound, T upperBound) throws OutOfBounds {
+    return check(T::toString, name, value, lowerBound, upperBound);
+  }
 }

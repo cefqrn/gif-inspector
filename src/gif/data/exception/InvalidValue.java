@@ -25,4 +25,18 @@ public class InvalidValue extends ParseException {
   public <T extends Object> InvalidValue(String name, T got, T... expected) {
     this(T::toString, name, got, expected);
   }
+
+  @SafeVarargs
+  public static <T> T check(Function<T, String> format, String name, T value, T... expected) throws InvalidValue {
+    for (var possibility : expected)
+      if (value.equals(possibility))
+        return value;
+
+    throw new InvalidValue(format, name, value, expected);
+  }
+
+  @SafeVarargs
+  public static <T> T check(String name, T value, T... expected) throws InvalidValue {
+    return check(T::toString, name, value, expected);
+  }
 }

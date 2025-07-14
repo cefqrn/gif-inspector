@@ -26,14 +26,10 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
 
   public static DataBlock readExpecting(InputStream stream, int... expectedSizes) throws IOException, ParseException {
     var result = readFrom(stream);
-    if (result.subBlocks.size() != expectedSizes.length)
-      throw new InvalidValue("data block subblock count", result.subBlocks.size(), expectedSizes.length);
 
-    for (var i=0; i < expectedSizes.length; ++i) {
-      var subBlockSize = result.subBlocks.get(i).data.size();
-      if (subBlockSize != expectedSizes[i])
-        throw new InvalidValue("subblock size", subBlockSize, expectedSizes[i]);
-    }
+    InvalidValue.check("data block subblock count", result.subBlocks.size(), expectedSizes.length);
+    for (var i=0; i < expectedSizes.length; ++i)
+      InvalidValue.check("subblock size", result.subBlocks.get(i).data.size(), expectedSizes[i]);
 
     return result;
   }
@@ -55,9 +51,7 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
     public final List<Byte> data;
 
     public SubBlock(byte[] data) throws OutOfBounds {
-      var size = data.length;
-      if (size < 1 || 255 < size)
-        throw new OutOfBounds("SubBlock size", size, 1, 255);
+      var size = OutOfBounds.check("subblock size", data.length, 1, 0xff);
 
       var list = new ArrayList<Byte>(size);
       for (var b : data)

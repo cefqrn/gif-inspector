@@ -46,14 +46,12 @@ public class Image implements LabeledBlock {
     var isSorted      = ((packedFields >> 5) & 1) == 1;
     var packedSize    =  (packedFields >> 0) & 7;
     if (hasColorTable) {
-      colorTable = Optional.of(ColorTable.readFrom(stream, packedSize, isSorted));
+      var table = ColorTable.readFrom(stream, packedSize, isSorted);
+      state.graphicControlExtension
+        .flatMap(GraphicControlExtension::transparentColorIndex)
+        .map(index -> OutOfBounds.check("transparent color index", index, 0, table.colors().size() - 1));
 
-      var transparentColorIndex = state.graphicControlExtension.flatMap(GraphicControlExtension::transparentColorIndex);
-      if (transparentColorIndex.isPresent()) {
-        var colorCount = colorTable.get().colors().size();
-        if (transparentColorIndex.get() >= colorCount)
-          throw new OutOfBounds("transparent color index", transparentColorIndex.get(), 0, colorCount);
-      }
+      colorTable = Optional.of(table);
     } else {
       if (isSorted)
         System.err.println("WARNING: missing local color table marked as sorted (not wrong but still)");
@@ -75,10 +73,7 @@ public class Image implements LabeledBlock {
 
   public Pixel[][] getPixels(Optional<GlobalColorTable> globalColorTable) throws ParseException {
     var indices = Lzw.decode(new BitStream(data), minimumCodeSize);
-
-    var expectedPixelCount = width * height;
-    if (indices.size() != expectedPixelCount)
-      throw new InvalidValue("image data pixel count", indices.size(), expectedPixelCount);
+    InvalidValue.check("image data pixel count", indices.size(), width * height);
 
     var colors = this.colorTable
       .or(() -> globalColorTable.map(GlobalColorTable::colorTable))

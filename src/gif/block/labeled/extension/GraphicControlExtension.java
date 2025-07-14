@@ -5,7 +5,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.Objects;
 import java.util.Optional;
 
 import gif.data.DataBlock;
@@ -22,19 +21,11 @@ public record GraphicControlExtension(
   public static final byte label = (byte)0xf9;
 
   public GraphicControlExtension(int disposalMethod, boolean waitsForUserInput, int delayTime, Optional<Integer> transparentColorIndex) {
-    if (disposalMethod < 0 || 7 < disposalMethod)
-      throw new OutOfBounds("disposal method", disposalMethod, 0, 7);
-
-    if (delayTime < 0 || 0xffff < delayTime)
-      throw new OutOfBounds("delay time", delayTime, 0, 0xffff);
-
-    if (transparentColorIndex.isPresent() && (transparentColorIndex.get() < 0 || 0xff < transparentColorIndex.get()))
-      throw new OutOfBounds("transparent color index", transparentColorIndex.get(), 0, 0xff);
-
-    this.disposalMethod = disposalMethod;
-    this.waitsForUserInput = waitsForUserInput;
-    this.delayTime = delayTime;
-    this.transparentColorIndex = transparentColorIndex.map(Objects::requireNonNull);
+    this.disposalMethod        = OutOfBounds.check("disposal method", disposalMethod, 0, 7);
+    this.waitsForUserInput     = waitsForUserInput;
+    this.delayTime             = OutOfBounds.check("delay time", delayTime, 0, 0xffff);
+    this.transparentColorIndex = transparentColorIndex.map(index ->
+      OutOfBounds.check("transparent color index", index, 0, 0xff));
   }
 
   public static GraphicControlExtension readFrom(InputStream stream) throws IOException, ParseException {
