@@ -3,17 +3,22 @@ package gif.block.labeled.extension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Objects;
 
 import gif.data.DataBlock;
 import gif.data.exception.ParseException;
 
-public class UnknownExtension implements Extension {
-  public final byte label;
-  public final DataBlock data;
-
-  public UnknownExtension(InputStream stream, byte label) throws IOException, ParseException {
+public record UnknownExtension(
+  byte label,
+  DataBlock data
+) implements Extension {
+  public UnknownExtension(byte label, DataBlock data) {
     this.label = label;
-    this.data = DataBlock.readFrom(stream);
+    this.data  = Objects.requireNonNull(data);
+  }
+
+  public static UnknownExtension readFrom(InputStream stream, byte label) throws IOException, ParseException {
+    return new UnknownExtension(label, DataBlock.readFrom(stream));
   }
 
   @Override

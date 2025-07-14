@@ -14,7 +14,7 @@ public interface Extension extends LabeledBlock {
     var label = Read.byteFrom(stream);
     return switch (label) {
       case GraphicControlExtension.label -> GraphicControlExtension.readFrom(stream);
-      default                            -> new UnknownExtension(stream, label);
+      default                            -> UnknownExtension.readFrom(stream, label);
     };
   }
 }
