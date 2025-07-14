@@ -13,7 +13,7 @@ public interface Extension extends LabeledBlock {
   public static Extension readFrom(InputStream stream) throws IOException, ParseException {
     var label = Read.byteFrom(stream);
     return switch (label) {
-      case GraphicControlExtension.label -> new GraphicControlExtension(stream);
+      case GraphicControlExtension.label -> GraphicControlExtension.readFrom(stream);
       default                            -> new UnknownExtension(stream, label);
     };
   }

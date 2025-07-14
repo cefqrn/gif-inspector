@@ -48,7 +48,7 @@ public class Image implements LabeledBlock {
     if (hasColorTable) {
       colorTable = Optional.of(ColorTable.readFrom(stream, packedSize, isSorted));
 
-      var transparentColorIndex = state.graphicControlExtension.flatMap(extension -> extension.transparentColorIndex);
+      var transparentColorIndex = state.graphicControlExtension.flatMap(GraphicControlExtension::transparentColorIndex);
       if (transparentColorIndex.isPresent()) {
         var colorCount = colorTable.get().colors().size();
         if (transparentColorIndex.get() >= colorCount)
@@ -86,7 +86,7 @@ public class Image implements LabeledBlock {
       .orElseThrow(() -> new ParseException("no color table"));
 
     var transparentColorIndex = graphicControlExtension
-      .flatMap(e -> e.transparentColorIndex)
+      .flatMap(GraphicControlExtension::transparentColorIndex)
       .orElse(-1);
 
     var possibleValues = new Pixel[colors.size()];
