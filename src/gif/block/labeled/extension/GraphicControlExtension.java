@@ -48,7 +48,7 @@ public record GraphicControlExtension(
   }
 
   @Override
-  public byte getLabel() { return GraphicControlExtension.label; }
+  public byte label() { return GraphicControlExtension.label; }
 
   public void writeTo(OutputStream stream) throws IOException {
     stream.write(Extension.label);

@@ -7,7 +7,7 @@ public class Trailer implements LabeledBlock {
   public static final byte label = 0x3b;
 
   @Override
-  public byte getLabel() { return Trailer.label; }
+  public byte label() { return Trailer.label; }
 
   @Override
   public boolean isGraphicRenderingBlock() {

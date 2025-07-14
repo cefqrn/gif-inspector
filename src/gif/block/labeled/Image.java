@@ -69,7 +69,7 @@ public class Image implements LabeledBlock {
   }
 
   @Override
-  public byte getLabel() { return Image.label; }
+  public byte label() { return Image.label; }
 
   public Pixel[][] getPixels(Optional<GlobalColorTable> globalColorTable) throws ParseException {
     var indices = Lzw.decode(new BitStream(data), minimumCodeSize);

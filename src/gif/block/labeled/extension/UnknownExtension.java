@@ -22,9 +22,6 @@ public record UnknownExtension(
   }
 
   @Override
-  public byte getLabel() { return label; }
-
-  @Override
   public void writeTo(OutputStream stream) throws IOException {
     stream.write(Extension.label);
     stream.write(label);
