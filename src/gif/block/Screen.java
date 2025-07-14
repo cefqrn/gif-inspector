@@ -7,31 +7,41 @@ import java.util.Objects;
 import java.util.Optional;
 
 import gif.data.ColorTable;
+import gif.data.exception.OutOfBounds;
 import gif.data.exception.UnexpectedEndOfStream;
 import gif.module.Read;
 import gif.module.Write;
 
-public class Screen implements Block {
-  public final int width;
-  public final int height;
-  public final int pixelAspectRatio;
-  public final int colorResolution;
-  public final Optional<GlobalColorTable> globalColorTable;
+public record Screen(
+  int width,
+  int height,
+  int pixelAspectRatio,
+  int colorResolution,
+  Optional<GlobalColorTable> globalColorTable
+) implements Block {
+  public Screen(int width, int height, int pixelAspectRatio, int colorResolution, Optional<GlobalColorTable> globalColorTable) {
+    this.width            = OutOfBounds.check("width",  width,  0, 0xffff);
+    this.height           = OutOfBounds.check("height", height, 0, 0xffff);
+    this.pixelAspectRatio = OutOfBounds.check("pixel aspect ratio", pixelAspectRatio, 0, 0xff);
+    this.colorResolution  = OutOfBounds.check("color resolution", colorResolution, 0, 7);
+    this.globalColorTable = globalColorTable.map(Objects::requireNonNull);
+  }
 
-  public Screen(InputStream stream) throws IOException, UnexpectedEndOfStream {
-    width = Read.U16From(stream);
-    height = Read.U16From(stream);
+  public static Screen readFrom(InputStream stream) throws IOException, UnexpectedEndOfStream {
+    var width  = Read.U16From(stream);
+    var height = Read.U16From(stream);
 
     var packedFields = Read.U8From(stream);
 
     var backgroundColorIndex = Read.U8From(stream);
-    pixelAspectRatio = Read.U8From(stream);
+    var pixelAspectRatio     = Read.U8From(stream);
 
     var hasGlobalColorTable =  (packedFields >> 7) == 1;
-    colorResolution         =  (packedFields >> 4) & 7;
+    var colorResolution     =  (packedFields >> 4) & 7;
 
     var isSorted            = ((packedFields >> 3) & 1) == 1;
     var packedSize          =  (packedFields >> 0) & 7;
+    Optional<GlobalColorTable> globalColorTable = Optional.empty();
     if (hasGlobalColorTable) {
       globalColorTable = Optional.of(GlobalColorTable.readFrom(stream, packedSize, isSorted, backgroundColorIndex));
     } else {
@@ -52,9 +62,9 @@ public class Screen implements Block {
        */
       if (packedSize != 0)
         System.err.println("WARNING: missing global color table has nonzero packed size");
-
-      globalColorTable = Optional.empty();
     }
+
+    return new Screen(width, height, pixelAspectRatio, colorResolution, globalColorTable);
   }
 
   @Override

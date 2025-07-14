@@ -23,7 +23,7 @@ public class Gif implements Serializable {
 
   public Gif(InputStream stream) throws IOException, ParseException {
     header = Header.readFrom(stream);
-    screen = new Screen(stream);
+    screen = Screen.readFrom(stream);
 
     var blocks = new ArrayList<LabeledBlock>();
     var state = new State();

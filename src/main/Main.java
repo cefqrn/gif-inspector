@@ -69,8 +69,8 @@ public class Main extends Application {
         try {
           var gif = new Gif(stream);
 
-          System.out.println(gif.screen.width);
-          System.out.println(gif.screen.height);
+          System.out.println(gif.screen.width());
+          System.out.println(gif.screen.height());
 
           var output = new ByteArrayOutputStream();
           gif.writeTo(output);
