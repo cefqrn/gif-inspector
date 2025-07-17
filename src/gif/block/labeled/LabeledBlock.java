@@ -6,16 +6,16 @@ import java.io.InputStream;
 import gif.block.Block;
 import gif.block.labeled.extension.Extension;
 import gif.data.State;
+import gif.data.Unsigned;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
 import gif.data.format.ByteFormatter;
-import gif.module.Read;
 
 public interface LabeledBlock extends Block {
   byte label();
 
   public static LabeledBlock readFrom(InputStream stream, State state) throws IOException, ParseException {
-    var label = Read.byteFrom(stream);
+    var label = Unsigned.Byte.readFrom(stream).byteValue();
     return switch (label) {
       case Extension.label -> Extension.readFrom(stream);
       case     Image.label -> Image.readFrom(stream, state);

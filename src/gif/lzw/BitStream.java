@@ -1,23 +1,23 @@
 package gif.lzw;
 
-import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import gif.data.DataBlock;
+import gif.data.Unsigned;
+import gif.data.DataBlock.SubBlock;
 import gif.data.exception.UnexpectedEndOfStream;
 
 public class BitStream {
-  private final Iterator<Byte> data;
+  private final Iterator<Unsigned.Byte> data;
   private int currentByte = 0;
   private int bitsLeftInCurrentByte = 0;
 
   public BitStream(DataBlock dataBlock) {
-    var bytes = new ArrayList<Byte>(dataBlock.totalSize());
-    for (var subBlock : dataBlock.subBlocks())
-      for (var b : subBlock.data)
-        bytes.add(b);
-
-    data = bytes.iterator();
+    data = dataBlock.subBlocks().stream()
+      .map(SubBlock::data)
+      .flatMap(List::stream)
+      .iterator();
   }
 
   private static int reverseBits(int bits, int bitCount) {
@@ -36,7 +36,7 @@ public class BitStream {
       if (!data.hasNext())
         throw new UnexpectedEndOfStream();
 
-      currentByte = data.next();
+      currentByte = data.next().intValue();
       bitsLeftInCurrentByte = 8;
     }
 

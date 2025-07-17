@@ -9,9 +9,7 @@ import java.util.List;
 import java.util.Objects;
 
 import gif.data.exception.InvalidValue;
-import gif.data.exception.OutOfBounds;
 import gif.data.exception.ParseException;
-import gif.module.Read;
 
 public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
   public DataBlock(List<SubBlock> subBlocks) {
@@ -22,11 +20,11 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
   public static DataBlock readFrom(InputStream stream) throws IOException, ParseException {
     var subBlocks = new ArrayList<SubBlock>();
     while (true) {
-      var length = Read.U8From(stream);
-      if (length == 0)
+      var length = Unsigned.Byte.readFrom(stream);
+      if (length.equals(Unsigned.Byte.ZERO))
         return new DataBlock(Collections.unmodifiableList(subBlocks));
 
-      subBlocks.add(new SubBlock(Read.byteArrayFrom(stream, length)));
+      subBlocks.add(new SubBlock(Unsigned.Byte.readListFrom(stream, length.intValue())));
     }
   }
 
@@ -53,23 +51,16 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
       .sum();
   }
 
-  public static final class SubBlock implements Serializable {
-    public final List<Byte> data;
-
-    public SubBlock(byte[] data) throws OutOfBounds {
-      var size = OutOfBounds.check("subblock size", data.length, 1, 0xff);
-
-      var list = new ArrayList<Byte>(size);
-      for (var b : data)
-        list.add(b);
-
-      this.data = Collections.unmodifiableList(list);
+  public record SubBlock(List<Unsigned.Byte> data) implements Serializable {
+    public SubBlock(List<Unsigned.Byte> data) {
+      data.stream().forEach(Objects::requireNonNull);
+      this.data = List.copyOf(data);
     }
 
     public void writeTo(OutputStream stream) throws IOException {
       stream.write(data.size());
       for (var b : data)
-        stream.write(b);
+        b.writeTo(stream);
     }
   }
 }
