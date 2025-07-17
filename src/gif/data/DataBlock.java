@@ -27,6 +27,7 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
     }
   }
 
+  @Override
   public void writeTo(OutputStream stream) throws IOException {
     for (var subBlock : subBlocks)
       subBlock.writeTo(stream);
@@ -46,6 +47,7 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
       this.data = List.copyOf(data);
     }
 
+    @Override
     public void writeTo(OutputStream stream) throws IOException {
       stream.write(data.size());
       for (var b : data)
