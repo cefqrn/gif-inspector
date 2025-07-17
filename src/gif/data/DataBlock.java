@@ -24,7 +24,7 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
       if (length.equals(Unsigned.Byte.ZERO))
         return new DataBlock(Collections.unmodifiableList(subBlocks));
 
-      subBlocks.add(new SubBlock(Unsigned.Byte.readListFrom(stream, length.intValue())));
+      subBlocks.add(new SubBlock(Unsigned.Byte.listFrom(stream.readNBytes(length.intValue()))));
     }
   }
 

@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -12,7 +11,6 @@ import java.util.Optional;
 import gif.data.DataBlock;
 import gif.data.DisposalMethod;
 import gif.data.Unsigned;
-import gif.data.exception.OutOfBounds;
 import gif.data.exception.ParseException;
 
 public record GraphicControlExtension(
@@ -66,12 +64,6 @@ public record GraphicControlExtension(
     delayTime.writeTo(data);
     transparentColorIndex.orElse(Unsigned.Byte.ZERO).writeTo(data);
 
-    var bytes = new ArrayList<Unsigned.Byte>(data.size());
-    for (var b : data.toByteArray())
-      bytes.add(new Unsigned.Byte(Byte.toUnsignedInt(b)));
-
-    try {
-      new DataBlock(List.of(new DataBlock.SubBlock(bytes))).writeTo(stream);
-    } catch (OutOfBounds e) {}  // unreachable
+    new DataBlock(List.of(new DataBlock.SubBlock(Unsigned.Byte.listFrom(data.toByteArray())))).writeTo(stream);
   }
 }

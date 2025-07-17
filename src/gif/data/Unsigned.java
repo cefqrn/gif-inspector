@@ -4,7 +4,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 import gif.data.exception.OutOfBounds;
@@ -13,7 +12,11 @@ import gif.data.exception.UnexpectedEndOfStream;
 public sealed abstract class Unsigned extends Number implements Comparable<Unsigned>, Serializable {
   protected final int value;
 
-  private Unsigned(String name, int value, int bound) {
+  protected Unsigned(int value) {
+    this.value = value;
+  }
+
+  protected Unsigned(String name, int value, int bound) {
     this.value = OutOfBounds.check(name, value, 0, bound);
   }
 
@@ -40,6 +43,10 @@ public sealed abstract class Unsigned extends Number implements Comparable<Unsig
   public static final class Byte extends Unsigned {
     public static final Byte ZERO = new Byte(0);
 
+    public Byte(byte value) {
+      super(java.lang.Byte.toUnsignedInt(value));
+    }
+
     public Byte(int value) throws OutOfBounds {
       super("unsigned byte", value, 0xff);
     }
@@ -52,15 +59,12 @@ public sealed abstract class Unsigned extends Number implements Comparable<Unsig
       return new Byte(a);
     }
 
-    public static List<Byte> readListFrom(InputStream stream, int length) throws IOException, UnexpectedEndOfStream {
-      if (length < 0)
-        throw new IllegalArgumentException("length must be nonnegative (got " + length + ")");
+    public static List<Byte> listFrom(byte[] bytes) {
+      var result = new ArrayList<Byte>(bytes.length);
+      for (var b : bytes)
+        result.add(new Byte(b));
 
-      var result = new ArrayList<Byte>(length);
-      for (var i=0; i < length; ++i)
-        result.add(Byte.readFrom(stream));
-
-      return Collections.unmodifiableList(result);
+      return result;
     }
 
     @Override
@@ -71,6 +75,10 @@ public sealed abstract class Unsigned extends Number implements Comparable<Unsig
 
   public static final class Short extends Unsigned {
     public static final Short ZERO = new Short(0);
+
+    public Short(short value) {
+      super(java.lang.Short.toUnsignedInt(value));
+    }
 
     public Short(int value) throws OutOfBounds {
       super("unsigned short", value, 0xffff);
