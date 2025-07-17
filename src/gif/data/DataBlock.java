@@ -8,7 +8,6 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
-import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
 
 public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
@@ -26,16 +25,6 @@ public record DataBlock(List<SubBlock> subBlocks) implements Serializable {
 
       subBlocks.add(new SubBlock(Unsigned.Byte.listFrom(stream.readNBytes(length.intValue()))));
     }
-  }
-
-  public static DataBlock readExpecting(InputStream stream, int... expectedSizes) throws IOException, ParseException {
-    var result = readFrom(stream);
-
-    InvalidValue.check("data block subblock count", result.subBlocks.size(), expectedSizes.length);
-    for (var i=0; i < expectedSizes.length; ++i)
-      InvalidValue.check("subblock size", result.subBlocks.get(i).data.size(), expectedSizes[i]);
-
-    return result;
   }
 
   public void writeTo(OutputStream stream) throws IOException {
