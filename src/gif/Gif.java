@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import gif.block.Block;
+import gif.block.BlockType;
 import gif.block.Extension;
 import gif.block.LabeledBlock;
 import gif.data.Serializable;
@@ -37,7 +38,7 @@ public class Gif implements Serializable {
           state.graphicControlExtension = Optional.of(graphicControlExtension);
         }
         case LabeledBlock block -> {
-          if (block.isGraphicRenderingBlock())
+          if (block instanceof BlockType.GraphicRenderingBlock)
             state = new State();  // clear control blocks
 
           blocks.add(block);

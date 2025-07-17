@@ -14,7 +14,7 @@ import gif.data.Unsigned;
 import gif.data.exception.InvalidValue;
 import gif.data.exception.ParseException;
 
-public sealed interface Extension extends LabeledBlock permits Extension.GraphicControlExtension, Extension.UnknownExtension {
+public sealed interface Extension extends LabeledBlock permits UnknownExtension, Extension.GraphicControlExtension {
   public static final byte label = 0x21;
 
   DataBlock data();
@@ -22,9 +22,13 @@ public sealed interface Extension extends LabeledBlock permits Extension.Graphic
   public static Extension readFrom(InputStream stream) throws IOException, ParseException {
     var label = Unsigned.Byte.readFrom(stream).byteValue();
     var data  = DataBlock.readFrom(stream);
-    return switch (label) {
+    return switch (Byte.valueOf(label)) {
       case GraphicControlExtension.label -> GraphicControlExtension.from(data);
-      default                            -> new UnknownExtension(label, data);
+      case Byte b when BlockType.isLabelForControlBlock(b)          -> new UnknownExtension.UnknownControlExtension         (label, data);
+      case Byte b when BlockType.isLabelForGraphicRenderingBlock(b) -> new UnknownExtension.UnknownGraphicRenderingExtension(label, data);
+      case Byte b when BlockType.isLabelForSpecialPurposeBlock(b)   -> new UnknownExtension.UnknownSpecialPurposeExtension  (label, data);
+      default ->
+        throw new Error("unreachable");
     };
   }
 
@@ -41,7 +45,7 @@ public sealed interface Extension extends LabeledBlock permits Extension.Graphic
     boolean waitsForUserInput,
     Unsigned.Short delayTime,
     Optional<Unsigned.Byte> transparentColorIndex
-  ) implements Extension {
+  ) implements Extension, BlockType.ControlBlock {
     public static final byte label = (byte)0xf9;
 
     public GraphicControlExtension(DisposalMethod disposalMethod, boolean waitsForUserInput, Unsigned.Short delayTime, Optional<Unsigned.Byte> transparentColorIndex) {
@@ -87,16 +91,6 @@ public sealed interface Extension extends LabeledBlock permits Extension.Graphic
       transparentColorIndex.orElse(Unsigned.Byte.ZERO).writeTo(result);
 
       return new DataBlock(List.of(new DataBlock.SubBlock(Unsigned.Byte.listFrom(result.toByteArray()))));
-    }
-  }
-
-  record UnknownExtension(
-    byte label,
-    DataBlock data
-  ) implements Extension {
-    public UnknownExtension(byte label, DataBlock data) {
-      this.label = label;
-      this.data  = Objects.requireNonNull(data);
     }
   }
 }

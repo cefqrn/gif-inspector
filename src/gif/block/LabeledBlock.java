@@ -33,21 +33,6 @@ public sealed interface LabeledBlock extends Block permits Extension, LabeledBlo
     };
   }
 
-  default boolean isGraphicRenderingBlock() {
-    var label = Byte.toUnsignedInt(label());
-    return 0x00 <= label && label <= 0x7f;
-  }
-
-  default boolean isControlBlock() {
-    var label = Byte.toUnsignedInt(label());
-    return 0x80 <= label && label <= 0xf9;
-  }
-
-  default boolean isSpecialPurposeBlock() {
-    var label = Byte.toUnsignedInt(label());
-    return 0xfa <= label && label <= 0xff;
-  }
-
   record Image(
     Unsigned.Short left,
     Unsigned.Short top,
@@ -58,7 +43,7 @@ public sealed interface LabeledBlock extends Block permits Extension, LabeledBlo
     int minimumCodeSize,
     DataBlock data,
     Optional<Extension.GraphicControlExtension> graphicControlExtension
-  ) implements LabeledBlock {
+  ) implements LabeledBlock, BlockType.GraphicRenderingBlock {
     public static final byte label = 0x2c;
 
     public Image(Unsigned.Short left, Unsigned.Short top, Unsigned.Short width, Unsigned.Short height, Optional<ColorTable> colorTable, boolean isInterlaced, int minimumCodeSize, DataBlock data, Optional<Extension.GraphicControlExtension> graphicControlExtension) {
@@ -170,16 +155,11 @@ public sealed interface LabeledBlock extends Block permits Extension, LabeledBlo
     }
   }
 
-  record Trailer() implements LabeledBlock {
+  record Trailer() implements LabeledBlock, BlockType.ControlBlock {
     public static final byte label = 0x3b;
 
     @Override
     public byte label() { return Trailer.label; }
-
-    @Override
-    public boolean isGraphicRenderingBlock() {
-      return false;
-    }
 
     @Override
     public void writeTo(OutputStream stream) throws IOException {

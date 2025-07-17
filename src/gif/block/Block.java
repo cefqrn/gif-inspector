@@ -18,7 +18,7 @@ import gif.data.exception.ParseException;
 import gif.data.exception.UnexpectedEndOfStream;
 
 public sealed interface Block extends Serializable permits LabeledBlock, Block.Header, Block.Screen {
-  record Header(List<Unsigned.Byte> signature, Version version) implements Block {
+  record Header(List<Unsigned.Byte> signature, Version version) implements Block, BlockType.ControlBlock {
     private static final List<Unsigned.Byte> EXPECTED_SIGNATURE = Collections.unmodifiableList(Unsigned.Byte.listFrom("GIF".getBytes()));
 
     public Header(List<Unsigned.Byte> signature, Version version) {
@@ -50,7 +50,7 @@ public sealed interface Block extends Serializable permits LabeledBlock, Block.H
     Unsigned.Byte pixelAspectRatio,
     int colorResolution,
     Optional<GlobalColorTable> globalColorTable
-  ) implements Block {
+  ) implements Block, BlockType.ControlBlock {
     public Screen(Unsigned.Short width, Unsigned.Short height, Unsigned.Byte pixelAspectRatio, int colorResolution, Optional<GlobalColorTable> globalColorTable) {
       this.width            = Objects.requireNonNull(width );
       this.height           = Objects.requireNonNull(height);
