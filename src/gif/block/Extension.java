@@ -1,0 +1,103 @@
+package gif.block;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.util.List;
+import java.util.Objects;
+import java.util.Optional;
+
+import gif.data.DataBlock;
+import gif.data.DisposalMethod;
+import gif.data.Unsigned;
+import gif.data.exception.ParseException;
+
+public sealed interface Extension extends LabeledBlock permits Extension.GraphicControlExtension, Extension.UnknownExtension {
+  public static final byte label = 0x21;
+
+  public static Extension readFrom(InputStream stream) throws IOException, ParseException {
+    var label = Unsigned.Byte.readFrom(stream).byteValue();
+    return switch (label) {
+      case GraphicControlExtension.label -> GraphicControlExtension.readFrom(stream);
+      default                            -> UnknownExtension.readFrom(stream, label);
+    };
+  }
+
+  record GraphicControlExtension(
+    DisposalMethod disposalMethod,
+    boolean waitsForUserInput,
+    Unsigned.Short delayTime,
+    Optional<Unsigned.Byte> transparentColorIndex
+  ) implements Extension {
+    public static final byte label = (byte)0xf9;
+
+    public GraphicControlExtension(DisposalMethod disposalMethod, boolean waitsForUserInput, Unsigned.Short delayTime, Optional<Unsigned.Byte> transparentColorIndex) {
+      this.disposalMethod        = Objects.requireNonNull(disposalMethod);
+      this.waitsForUserInput     = waitsForUserInput;
+      this.delayTime             = Objects.requireNonNull(delayTime);
+      this.transparentColorIndex = transparentColorIndex.map(Objects::requireNonNull);
+    }
+
+    public static GraphicControlExtension readFrom(InputStream stream) throws IOException, ParseException {
+      var datablock = DataBlock.readExpecting(stream, 4);
+      var data = datablock.subBlocks().get(0).data();
+
+      var delayTime = Unsigned.Short.fromBytes(data.get(1), data.get(2));
+
+      var packedFields = data.get(0).intValue();
+      var hasTransparencyIndex =                    ((packedFields >> 0) & 1) == 1;
+      var waitsForUserInput    =                    ((packedFields >> 1) & 1) == 1;
+      var disposalMethod       = DisposalMethod.from((packedFields >> 2) & 7);
+
+      // var doesn't work here
+      Optional<Unsigned.Byte> transparentColorIndex = hasTransparencyIndex
+        ? Optional.of(data.get(3))
+        : Optional.empty();
+
+      return new GraphicControlExtension(disposalMethod, waitsForUserInput, delayTime, transparentColorIndex);
+    }
+
+    @Override
+    public byte label() { return GraphicControlExtension.label; }
+
+    public void writeTo(OutputStream stream) throws IOException {
+      stream.write(Extension.label);
+      stream.write(GraphicControlExtension.label);
+
+      var data = new ByteArrayOutputStream(4);
+
+      var packedFields = (transparentColorIndex.isPresent() ? (1 << 0) : 0)
+                       | (waitsForUserInput                 ? (1 << 1) : 0)
+                       | (disposalMethod.encodedValue()          << 2     );
+      data.write(packedFields);
+
+      delayTime.writeTo(data);
+      transparentColorIndex.orElse(Unsigned.Byte.ZERO).writeTo(data);
+
+      new DataBlock(List.of(new DataBlock.SubBlock(Unsigned.Byte.listFrom(data.toByteArray())))).writeTo(stream);
+    }
+  }
+
+  record UnknownExtension(
+    byte label,
+    DataBlock data
+  ) implements Extension {
+    public UnknownExtension(byte label, DataBlock data) {
+      this.label = label;
+      this.data  = Objects.requireNonNull(data);
+    }
+
+    public static UnknownExtension readFrom(InputStream stream, byte label) throws IOException, ParseException {
+      return new UnknownExtension(label, DataBlock.readFrom(stream));
+    }
+
+    @Override
+    public void writeTo(OutputStream stream) throws IOException {
+      stream.write(Extension.label);
+      stream.write(label);
+
+      data.writeTo(stream);
+    }
+  }
+}

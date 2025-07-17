@@ -6,36 +6,34 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Optional;
 
-import gif.block.Header;
-import gif.block.Screen;
-import gif.block.labeled.LabeledBlock;
-import gif.block.labeled.Trailer;
-import gif.block.labeled.extension.GraphicControlExtension;
+import gif.block.Block;
+import gif.block.Extension;
+import gif.block.LabeledBlock;
 import gif.data.Serializable;
 import gif.data.State;
 import gif.data.exception.ParseException;
 
 public class Gif implements Serializable {
-  public final Header header;
-  public final Screen screen;
+  public final Block.Header header;
+  public final Block.Screen screen;
   public final LabeledBlock[] blocks;
-  public final Trailer trailer;
+  public final LabeledBlock.Trailer trailer;
 
   public Gif(InputStream stream) throws IOException, ParseException {
-    header = Header.readFrom(stream);
-    screen = Screen.readFrom(stream);
+    header = Block.Header.readFrom(stream);
+    screen = Block.Screen.readFrom(stream);
 
     var blocks = new ArrayList<LabeledBlock>();
     var state = new State();
     while (true) {
       switch (LabeledBlock.readFrom(stream, state)) {
-        case Trailer trailer -> {
+        case LabeledBlock.Trailer trailer -> {
           this.trailer = trailer;
           this.blocks = blocks.toArray(LabeledBlock[]::new);
 
           return;
         }
-        case GraphicControlExtension graphicControlExtension -> {
+        case Extension.GraphicControlExtension graphicControlExtension -> {
           state.graphicControlExtension = Optional.of(graphicControlExtension);
         }
         case LabeledBlock block -> {

@@ -2,8 +2,8 @@ package gif.data;
 
 import java.util.Optional;
 
-import gif.block.labeled.extension.GraphicControlExtension;
+import gif.block.Extension;
 
 public class State {
-  public Optional<GraphicControlExtension> graphicControlExtension;
+  public Optional<Extension.GraphicControlExtension> graphicControlExtension;
 }
